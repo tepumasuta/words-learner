@@ -1,6 +1,7 @@
 import datetime
 import os
 from dataclasses import dataclass, field, asdict
+from typing import Any
 from serialize import *
 
 
@@ -55,3 +56,21 @@ class Database:
 
     def __contains__(self, key: str) -> bool:
         return key in self._data
+
+    def get(self, key: str, default_value: Any) -> tuple[Record, ...] | Any:
+        if not isinstance(key, str):
+            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}`")
+        
+        if key not in self:
+            return default_value
+        
+        return tuple(entry.copy() for entry in self._data[key])
+
+    def __getitem__(self, key: str) -> tuple[Record, ...]:
+        if not isinstance(key, str):
+            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}`")
+
+        if key not in self:
+            raise KeyError(f"Key `{key}` not found")
+
+        return tuple(entry.copy() for entry in self._data[key])

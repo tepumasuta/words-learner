@@ -19,3 +19,11 @@ class Record(ISerializable):
                       raw['contents'],
                       raw['last_update_date'],
                       raw['repeated_times'])
+
+    def copy(self):
+        return Record(
+            self.mapped_word,
+            list(self.contents),
+            self.last_update_date,
+            self.repeated_times,
+        )

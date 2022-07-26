@@ -125,7 +125,7 @@ class Database:
 
 
 class DatabasesView:
-    def __init__(self, links: dict[str, Database], *databases):
+    def __init__(self, links: dict[str, list[tuple[Database, dict]]], *databases):
         self._databases: dict[str, Database] = {db.name: db for db in databases}
         self._links = links
     
@@ -163,3 +163,18 @@ class DatabasesView:
             raise KeyError(f"Key `{key}` not found")
         
         return db.get(key)
+    
+    def link(self, db_name_from: str, db_name_to: str, reverse: bool = False):
+        if not isinstance(db_name_from, str):
+            raise TypeError(f"Database name must be a string. Recieved `{db_name_from}` of type `{type(db_name_from)}")
+        if not isinstance(db_name_to, str):
+            raise TypeError(f"Database name must be a string. Recieved `{db_name_to}` of type `{type(db_name_to)}")
+        if not isinstance(reverse, bool):
+            raise TypeError(f"Reverse must be a bool. Recieved `{reverse}` of type `{type(reverse)}")
+        
+        if db_name_from not in self._databases:
+            raise KeyError(f"Database `{db_name_from}` not found")
+        if db_name_to not in self._databases:
+            raise KeyError(f"Database `{db_name_to}` not found")
+        
+        self._links[db_name_from].append((self._databases[db_name_to], {reverse: reverse}))

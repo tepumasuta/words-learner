@@ -74,3 +74,29 @@ class Database:
             raise KeyError(f"Key `{key}` not found")
 
         return tuple(entry.copy() for entry in self._data[key])
+
+    def add(self, key: str, value: str, date: datetime.date = None, repeated_times: int = 0):
+        if date is None:
+            date = datetime.date.today()
+        
+        if not isinstance(key, str):
+            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}")
+        if not isinstance(value, str):
+            raise TypeError(f"Value must be a string. Recieved `{value}` of type `{type(value)}")
+        if not isinstance(date, datetime.date):
+            raise TypeError(f"Date must be a date. Recieved `{date}` of type `{type(date)}")
+        if not isinstance(repeated_times, int):
+            raise TypeError(f"Repeated times must be int. Recieved `{repeated_times}` of type `{type(repeated_times)}")
+        
+        if key in self and value in key[self]:
+            raise ValueError(f"Value is already in database at {key}. Trying to override it with `{value}`")
+        if repeated_times < 0:
+            raise ValueError(f'Repeated times must be greater than 0. Received: {repeated_times}')
+        
+        if key not in self:
+            self._data[key] = Record(key, [value], date, repeated_times)
+            return
+
+        self._data[key].contents.append(value)
+        self._data[key].last_update_date = date
+        self._date[key].repeated_times = repeated_times

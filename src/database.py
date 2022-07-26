@@ -178,3 +178,23 @@ class DatabasesView:
             raise KeyError(f"Database `{db_name_to}` not found")
         
         self._links[db_name_from].append((self._databases[db_name_to], {reverse: reverse}))
+    
+    def unlink(self, db_name_from: str, db_name_to: str):
+        if not isinstance(db_name_from, str):
+            raise TypeError(f"Database name must be a string. Recieved `{db_name_from}` of type `{type(db_name_from)}")
+        if not isinstance(db_name_to, str):
+            raise TypeError(f"Database name must be a string. Recieved `{db_name_to}` of type `{type(db_name_to)}")
+
+        if db_name_from not in self._databases:
+            raise KeyError(f"Database `{db_name_from}` not found")
+        if db_name_to not in self._databases:
+            raise KeyError(f"Database `{db_name_to}` not found")
+        
+        if db_name_to not in map(lambda x: x[0], self._links[db_name_from]):
+            raise ValueError(f"Database {db_name_from} is not linked to {db_name_to}")
+        
+        for i, x in enumerate(map(lambda x: x[0], self._links[db_name_from])):
+            if x == db_name_to:
+                break
+        
+        self._links[db_name_from].pop(i)

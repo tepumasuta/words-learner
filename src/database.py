@@ -221,3 +221,21 @@ class DatabasesView:
                 self._links[key].pop(i)
         self._databases.pop(db_name)
         os.remove(path)
+    
+    def detach(self, db_name: str):
+        if not isinstance(db_name, str):
+            raise TypeError(f"Database name must be a string. Recieved `{db_name}` of type `{type(db_name)}")
+        
+        if db_name not in self._databases:
+            raise KeyError(f"Database `{db_name}` not found")
+        
+        if db_name in self._links:
+            self._links.pop(db_name)
+        db = self._databases[db_name]
+        for key, val in self._links.items():
+            if db in map(lambda x: x[0], val):
+                for i, val in enumerate(map(lambda x: x[0], val)):
+                    if val == db:
+                        break
+                self._links[key].pop(i)
+        self._databases.pop(db_name)

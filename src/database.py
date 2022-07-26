@@ -198,3 +198,18 @@ class DatabasesView:
                 break
         
         self._links[db_name_from].pop(i)
+    
+    def remove(self, db_name: str, key: str, value: str | None):
+        if not isinstance(db_name, str):
+            raise TypeError(f"Database name must be a string. Recieved `{db_name}` of type `{type(db_name)}")
+        if not isinstance(key, str):
+            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}")
+        if value is not None and not isinstance(value, str):
+            raise TypeError(f"Value must be a string or None. Recieved `{value}` of type `{type(value)}")
+        
+        if db_name not in self._databases:
+            raise KeyError(f"Database `{db_name}` not found")
+        
+        db = self._databases[db_name]
+        
+        db.remove(key, value)

@@ -151,9 +151,7 @@ class DatabasesView:
         if db_name not in self._databases:
             raise KeyError(f"Database `{db_name}` not found")
         
-        db = self._databases[db_name]
-        
-        return db.get(key)
+        return self._databases[db_name].get(key)
     
     def link(self, db_name_from: str, db_name_to: str, reverse: bool = False):
         if not isinstance(db_name_from, str):
@@ -197,6 +195,4 @@ class DatabasesView:
         if db_name not in self._databases:
             raise KeyError(f"Database `{db_name}` not found")
         
-        db = self._databases[db_name]
-        
-        db.remove(key, value)
+        self._databases[db_name].remove(key, value)

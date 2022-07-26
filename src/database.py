@@ -119,3 +119,5 @@ class Database:
         except ValueError:
             raise KeyError(f'Value `{value}` not found at {key}')
         
+    def keys(self):
+        return tuple(self._data.keys())

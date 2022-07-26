@@ -196,3 +196,7 @@ class DatabasesView:
             raise KeyError(f"Database `{db_name}` not found")
         
         self._databases[db_name].remove(key, value)
+
+    def dump(self):
+        for db in self._databases.values():
+            db.dump()

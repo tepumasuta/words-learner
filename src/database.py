@@ -132,10 +132,6 @@ class DatabasesView:
     def update(self, db_name: str, key: str, values: list[str], parameters: dict[str, Any] = None):
         if not isinstance(db_name, str):
             raise TypeError(f"Database name must be a string. Recieved `{db_name}` of type `{type(db_name)}")
-        if not isinstance(key, str):
-            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}")
-        if not all(isinstance(value, str) for value in values):
-            raise TypeError(f"Values must contain only strings. Values: `{values}`")
         
         # TODO: implement parameters
         if parameters is not None:
@@ -151,16 +147,11 @@ class DatabasesView:
     def get(self, db_name: str, key: str):
         if not isinstance(db_name, str):
             raise TypeError(f"Database name must be a string. Recieved `{db_name}` of type `{type(db_name)}")
-        if not isinstance(key, str):
-            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}")
         
         if db_name not in self._databases:
             raise KeyError(f"Database `{db_name}` not found")
         
         db = self._databases[db_name]
-        
-        if key not in db:
-            raise KeyError(f"Key `{key}` not found")
         
         return db.get(key)
     
@@ -202,10 +193,6 @@ class DatabasesView:
     def remove(self, db_name: str, key: str, value: str | None):
         if not isinstance(db_name, str):
             raise TypeError(f"Database name must be a string. Recieved `{db_name}` of type `{type(db_name)}")
-        if not isinstance(key, str):
-            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}")
-        if value is not None and not isinstance(value, str):
-            raise TypeError(f"Value must be a string or None. Recieved `{value}` of type `{type(value)}")
         
         if db_name not in self._databases:
             raise KeyError(f"Database `{db_name}` not found")

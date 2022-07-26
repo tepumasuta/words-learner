@@ -100,3 +100,22 @@ class Database:
         self._data[key].contents.append(value)
         self._data[key].last_update_date = date
         self._date[key].repeated_times = repeated_times
+
+    def remove(self, key: str, value: str | None = None):
+        if not isinstance(key, str):
+            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}")
+        if value is not None and not isinstance(value, str):
+            raise TypeError(f"Value must be a string or None. Recieved `{value}` of type `{type(value)}")
+        
+        if key not in self:
+            raise KeyError(f'Key `{key}` not found')
+
+        if value is None:
+            self._data.pop(key)
+            return
+
+        try:
+            self._data[key].contents.remove(value)
+        except ValueError:
+            raise KeyError(f'Value `{value}` not found at {key}')
+        

@@ -128,3 +128,22 @@ class DatabasesView:
     def __init__(self, links: dict[str, Database], *databases):
         self._databases: dict[str, Database] = {db.name: db for db in databases}
         self._links = links
+    
+    def update(self, db_name: str, key: str, values: list[str], parameters: dict[str, Any] = None):
+        if not isinstance(db_name, str):
+            raise TypeError(f"Database name must be a string. Recieved `{db_name}` of type `{type(db_name)}")
+        if not isinstance(key, str):
+            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}")
+        if not all(isinstance(value, str) for value in values):
+            raise TypeError(f"Values must contain only strings. Values: `{values}`")
+        
+        # TODO: implement parameters
+        if parameters is not None:
+            assert False, "Not implemeted yet"
+        
+        if db_name not in self._databases:
+            raise KeyError(f"Database `{db_name}` not found")
+        
+        db = self._databases[db_name]
+        for value in values:
+            db.add(key, value)

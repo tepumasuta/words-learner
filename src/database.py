@@ -147,3 +147,19 @@ class DatabasesView:
         db = self._databases[db_name]
         for value in values:
             db.add(key, value)
+    
+    def get(self, db_name: str, key: str):
+        if not isinstance(db_name, str):
+            raise TypeError(f"Database name must be a string. Recieved `{db_name}` of type `{type(db_name)}")
+        if not isinstance(key, str):
+            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}")
+        
+        if db_name not in self._databases:
+            raise KeyError(f"Database `{db_name}` not found")
+        
+        db = self._databases[db_name]
+        
+        if key not in db:
+            raise KeyError(f"Key `{key}` not found")
+        
+        return db.get(key)

@@ -119,3 +119,5 @@ class Database:
         except ValueError:
             raise KeyError(f'Value `{value}` not found at {key}')
         
+    def dump(self):
+        self._serializer.serialize_list([self._name, self._data], self._path)

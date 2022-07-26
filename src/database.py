@@ -52,3 +52,6 @@ class Database:
     @property
     def path(self) -> pathlib.Path:
         return self._path
+
+    def __contains__(self, key: str) -> bool:
+        return key in self._data

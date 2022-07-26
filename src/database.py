@@ -1,8 +1,9 @@
 import datetime
 import os
+import pathlib
 from dataclasses import dataclass, field, asdict
 from typing import Any
-from serialize import *
+from serialize import ISerializable, ISerializer
 
 
 @dataclass(slots=True)
@@ -121,3 +122,9 @@ class Database:
         
     def dump(self):
         self._serializer.serialize_list([self._name, self._data], self._path)
+
+
+class DatabasesView:
+    def __init__(self, links: dict[str, Database], *databases):
+        self._databases: dict[str, Database] = {db.name: db for db in databases}
+        self._links = links

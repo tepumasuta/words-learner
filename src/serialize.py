@@ -16,7 +16,7 @@ class ISerializable(ABC):
 class ISerializer(ABC):
     @staticmethod
     @abstractmethod
-    def serialize_list(obj: list[ISerializable], path: pathlib.Path):
+    def serialize_list(obj: list[ISerializable | str], path: pathlib.Path):
         ...
     
     @staticmethod

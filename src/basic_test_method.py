@@ -1,8 +1,8 @@
-from configparser import BasicInterpolation
+import random
 from action import IAction
 from database import Database
-import random
 from test_method import ITestmethod
+
 
 class BasicTestmethod(ITestmethod):
     def __init__(self, data: Database):

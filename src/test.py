@@ -25,10 +25,9 @@ class BasicTestmethod(ITestmethod):
 
             ran_choice = random.choice(self.data.keys())
             if ran_choice not in self.list_keys:
-                if self.amount_keys <= len(self.data.keys()):
-                    self.list_keys.append(ran_choice)
-                else:
-                    self.list_keys.append(ran_choice)
+                self.list_keys.append(ran_choice)
+                
+                if self.amount_keys > len(self.data.keys()):
                     self.amount_keys -= 1
 
         return tuple(self.list_keys)

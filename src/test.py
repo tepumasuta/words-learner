@@ -24,14 +24,11 @@ class BasicTestmethod(ITestmethod):
                 break
 
             ran_choice = random.choice(self.data.keys())
-            if self.amount_keys <= len(self.data.keys()) and not BasicTestmethod.repeat(ran_choice):
+            if self.amount_keys <= len(self.data.keys()) and ran_choice not in self.list_keys:
                 self.list_keys.append(ran_choice)
 
-            elif self.amount_keys > len(self.data.keys()) and not BasicTestmethod.repeat(ran_choice):       
+            elif self.amount_keys > len(self.data.keys()) and ran_choice not in self.list_keys:
                 self.list_keys.append(ran_choice)
                 self.amount_keys -= 1
 
         return tuple(self.list_keys)
-
-    def repeat(self, key):
-        return key in self.list_keys

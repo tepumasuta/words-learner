@@ -39,9 +39,6 @@ class Record(ISerializable):
 
 class Database:
     def __init__(self, path: pathlib.Path, serializer: ISerializer, name: str, data: dict[str, Record]):
-        if not os.path.exists(path):
-            raise FileNotFoundError()
-
         self._path = path
         self._serializer = serializer
         self._name: str = name

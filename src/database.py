@@ -33,19 +33,24 @@ class Record(ISerializable):
 
 
 class Database:
-    def __init__(self, path: pathlib.Path, serializer: ISerializer) -> None:
+    def __init__(self, path: pathlib.Path, serializer: ISerializer, name: str, data: dict[str, Record]):
         if not os.path.exists(path):
             raise FileNotFoundError()
 
         self._path = path
         self._serializer = serializer
+        self._name: str = name
+        self._data: dict[str, Record] = data
+    
+    @staticmethod
+    def load(path: pathlib.Path, serializer: ISerializer) -> 'Database':
+        if not os.path.exists(path):
+            raise FileNotFoundError()
 
-        self._data: dict[str, Record]
-        self._name: str
+        name, data = map(ISerializable.deserialize,
+                         serializer.deserialize_list(path))
 
-        self._name, self._data = map(
-            ISerializable.deserialize,
-            serializer.deserialize_list(path))
+        return Database(path, serializer, name, data)
 
     @property
     def name(self) -> str:

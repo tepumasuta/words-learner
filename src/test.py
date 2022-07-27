@@ -11,14 +11,16 @@ class ITestmethod(ABC):
 
 
 class BasicTestmethod(ITestmethod):
+    KEYS_AMOUNT = 20
+    
     def __init__(self, data: Database):
         self.data = data
-        self.amount_keys = 20
+        self.amount_keys = BasicTestmethod.KEYS_AMOUNT
         self.list_keys = []
 
     def test(self) -> IAction:
         while self.amount_keys != 0:
-            if len(self.list_keys) <= 20:
+            if len(self.list_keys) <= BasicTestmethod.KEYS_AMOUNT:
                 break
 
             ran_choice = random.choice(self.data.keys())

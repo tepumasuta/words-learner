@@ -1,7 +1,13 @@
 import random
+from abc import ABC, abstractmethod
 from action import IAction
 from database import Database
-from test_method import ITestmethod
+
+
+class ITestmethod(ABC):
+    @abstractmethod
+    def test(self, data: Database) -> IAction:
+        ...
 
 
 class BasicTestmethod(ITestmethod):

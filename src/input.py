@@ -8,6 +8,5 @@ class IInput(ABC):
         ...
 
     @abstractmethod
-    @staticmethod
     def get_action(self) -> IAction:
         ...

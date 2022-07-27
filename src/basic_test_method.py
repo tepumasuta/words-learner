@@ -27,4 +27,3 @@ class BasicTestmethod(ITestmethod):
 
     def repeat(self, key):
         return key in self.list_keys
-

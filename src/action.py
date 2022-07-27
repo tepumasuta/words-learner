@@ -2,5 +2,5 @@ from abc import ABC, abstractmethod
 
 class IAction(ABC):
     @abstractmethod
-    def act(self):
+    def act(self): #FIXME
         ...

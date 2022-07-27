@@ -118,7 +118,10 @@ class Database:
             self._data[key].contents.remove(value)
         except ValueError:
             raise KeyError(f'Value `{value}` not found at {key}')
-        
+    
+    def keys(self):
+        return tuple(self._data.keys())
+
     def dump(self):
         self._serializer.serialize_list([self._name, self._data], self._path)
 

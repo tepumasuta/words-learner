@@ -6,6 +6,11 @@ from typing import Any
 from serialize import ISerializable, ISerializer
 
 
+def _type_check(*params: tuple[Any, type, str, str]):
+    for var, var_type, var_name, var_type_name in params:
+        if not isinstance(var, var_type):
+            raise TypeError(f"{var_name} must be {var_type_name}. Recieved `{var}` of type {type(var)}")
+
 @dataclass(slots=True)
 class Record(ISerializable):
     mapped_word: str
@@ -64,8 +69,7 @@ class Database:
         return key in self._data
 
     def get(self, key: str, default_value: Any) -> tuple[Record, ...] | Any:
-        if not isinstance(key, str):
-            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}`")
+        _type_check((key, str, 'Key', 'a string'))
         
         if key not in self:
             return default_value
@@ -73,8 +77,7 @@ class Database:
         return tuple(entry.copy() for entry in self._data[key])
 
     def __getitem__(self, key: str) -> tuple[Record, ...]:
-        if not isinstance(key, str):
-            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}`")
+        _type_check((key, str, 'Key', 'a string'))
 
         if key not in self:
             raise KeyError(f"Key `{key}` not found")
@@ -84,16 +87,12 @@ class Database:
     def add(self, key: str, value: str, date: datetime.date = None, repeated_times: int = 0):
         if date is None:
             date = datetime.date.today()
-        
-        if not isinstance(key, str):
-            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}")
-        if not isinstance(value, str):
-            raise TypeError(f"Value must be a string. Recieved `{value}` of type `{type(value)}")
-        if not isinstance(date, datetime.date):
-            raise TypeError(f"Date must be a date. Recieved `{date}` of type `{type(date)}")
-        if not isinstance(repeated_times, int):
-            raise TypeError(f"Repeated times must be int. Recieved `{repeated_times}` of type `{type(repeated_times)}")
-        
+
+        _type_check((key, str, 'Key', 'a string'),
+                    (value, str, 'Value', 'a string'),
+                    (date, datetime.date, 'Date', 'a date'),
+                    (repeated_times, int, 'Repeated times', 'int'))
+
         if key in self and value in key[self]:
             raise ValueError(f"Value is already in database at {key}. Trying to override it with `{value}`")
         if repeated_times < 0:
@@ -108,11 +107,9 @@ class Database:
         self._date[key].repeated_times = repeated_times
 
     def remove(self, key: str, value: str | None = None):
-        if not isinstance(key, str):
-            raise TypeError(f"Key must be a string. Recieved `{key}` of type `{type(key)}")
-        if value is not None and not isinstance(value, str):
-            raise TypeError(f"Value must be a string or None. Recieved `{value}` of type `{type(value)}")
-        
+        _type_check((key, str, 'Key', 'a string'),
+                    (value, str | None, 'Value', 'a string or None'))
+
         if key not in self:
             raise KeyError(f'Key `{key}` not found')
 
@@ -135,8 +132,7 @@ class DatabasesView:
         self._links = links
     
     def update(self, db_name: str, key: str, values: list[str], parameters: dict[str, Any] = None):
-        if not isinstance(db_name, str):
-            raise TypeError(f"Database name must be a string. Recieved `{db_name}` of type `{type(db_name)}")
+        _type_check((db_name, str, 'Database name', 'a string'))
         
         # TODO: implement parameters
         if parameters is not None:
@@ -150,8 +146,7 @@ class DatabasesView:
             db.add(key, value)
     
     def get(self, db_name: str, key: str):
-        if not isinstance(db_name, str):
-            raise TypeError(f"Database name must be a string. Recieved `{db_name}` of type `{type(db_name)}")
+        _type_check((db_name, str, 'Database name', 'a string'))
         
         if db_name not in self._databases:
             raise KeyError(f"Database `{db_name}` not found")
@@ -159,12 +154,9 @@ class DatabasesView:
         return self._databases[db_name].get(key)
     
     def link(self, db_name_from: str, db_name_to: str, reverse: bool = False):
-        if not isinstance(db_name_from, str):
-            raise TypeError(f"Database name must be a string. Recieved `{db_name_from}` of type `{type(db_name_from)}")
-        if not isinstance(db_name_to, str):
-            raise TypeError(f"Database name must be a string. Recieved `{db_name_to}` of type `{type(db_name_to)}")
-        if not isinstance(reverse, bool):
-            raise TypeError(f"Reverse must be a bool. Recieved `{reverse}` of type `{type(reverse)}")
+        _type_check((db_name_from, str, 'Database name', 'a string'),
+                    (db_name_to, str, 'Database name', 'a string'),
+                    (reverse, bool, 'Reverse', 'a bool'))
         
         if db_name_from not in self._databases:
             raise KeyError(f"Database `{db_name_from}` not found")
@@ -174,10 +166,8 @@ class DatabasesView:
         self._links[db_name_from].append((self._databases[db_name_to], {reverse: reverse}))
     
     def unlink(self, db_name_from: str, db_name_to: str):
-        if not isinstance(db_name_from, str):
-            raise TypeError(f"Database name must be a string. Recieved `{db_name_from}` of type `{type(db_name_from)}")
-        if not isinstance(db_name_to, str):
-            raise TypeError(f"Database name must be a string. Recieved `{db_name_to}` of type `{type(db_name_to)}")
+        _type_check((db_name_from, str, 'Database name', 'a string'),
+                    (db_name_to, str, 'Database name', 'a string'))
 
         if db_name_from not in self._databases:
             raise KeyError(f"Database `{db_name_from}` not found")
@@ -194,8 +184,7 @@ class DatabasesView:
         self._links[db_name_from].pop(i)
     
     def remove(self, db_name: str, key: str, value: str | None):
-        if not isinstance(db_name, str):
-            raise TypeError(f"Database name must be a string. Recieved `{db_name}` of type `{type(db_name)}")
+        _type_check((db_name, str, 'Database name', 'a string'))
         
         if db_name not in self._databases:
             raise KeyError(f"Database `{db_name}` not found")
@@ -207,8 +196,7 @@ class DatabasesView:
             db.dump()
     
     def delete(self, db_name: str):
-        if not isinstance(db_name, str):
-            raise TypeError(f"Database name must be a string. Recieved `{db_name}` of type `{type(db_name)}")
+        _type_check((db_name, str, 'Database name', 'a string'))
         
         if db_name not in self._databases:
             raise KeyError(f"Database `{db_name}` not found")
@@ -228,8 +216,7 @@ class DatabasesView:
         os.remove(path)
     
     def detach(self, db_name: str):
-        if not isinstance(db_name, str):
-            raise TypeError(f"Database name must be a string. Recieved `{db_name}` of type `{type(db_name)}")
+        _type_check((db_name, str, 'Database name', 'a string'))
         
         if db_name not in self._databases:
             raise KeyError(f"Database `{db_name}` not found")

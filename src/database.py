@@ -103,7 +103,7 @@ class Database:
 
         self._data[key].contents.append(value)
         self._data[key].last_update_date = date
-        self._date[key].repeated_times = repeated_times
+        self._data[key].repeated_times = repeated_times
 
     def remove(self, key: str, value: str | None = None):
         _type_check((key, str, 'Key', 'a string'),

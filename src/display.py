@@ -1,17 +1,31 @@
 from abc import ABC, abstractmethod
+from sys import stderr
 
 class IDisplay(ABC):
     @staticmethod
     @abstractmethod
-    def print(str: str):
+    def print(string: str):
         ...
 
     @staticmethod
     @abstractmethod
-    def error(str: str):
+    def error(string: str):
         ...
 
     @staticmethod
     @abstractmethod
-    def log(str: str):
-        ...        
+    def log(string: str):
+        ... 
+
+class TerminalDisplay(IDisplay):
+    @staticmethod
+    def print(string: str):
+        print(string)
+
+    @staticmethod
+    def error(string: str):
+        print(string, file=stderr)
+
+    @staticmethod
+    def log(string: str):
+        print(string, file=stderr)

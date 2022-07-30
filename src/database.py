@@ -5,12 +5,7 @@ import enum
 from dataclasses import dataclass, field, asdict
 from typing import Any
 from serialize import ISerializable, ISerializer
-
-
-def _type_check(*params: tuple[Any, type, str, str]):
-    for var, var_type, var_name, var_type_name in params:
-        if not isinstance(var, var_type):
-            raise TypeError(f"{var_name} must be {var_type_name}. Recieved `{var}` of type {type(var)}")
+from common import _type_check
 
 
 @dataclass(slots=True)

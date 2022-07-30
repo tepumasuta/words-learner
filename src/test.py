@@ -15,18 +15,10 @@ class BasicTestmethod(ITestmethod):
     
     def __init__(self):
         self._amount_keys = BasicTestmethod.KEYS_AMOUNT
-        self._list_keys = []
 
     def test(self, data: Database) -> TestAction:
-        while self._amount_keys != 0:
-            if len(self._list_keys) <= BasicTestmethod.KEYS_AMOUNT:
-                break
-
-            ran_choice = random.choice(data.keys())
-            if ran_choice not in self._list_keys:
-                self._list_keys.append(ran_choice)
-                
-                if self._amount_keys > len(data.keys()):
-                    self._amount_keys -= 1
-
-        return TestAction(self._list_keys)
+        if len(data.keys()) >= self._amount_keys:
+                self._ran_choice = random.sample(data.keys(), self._amount_keys)
+        else:
+                self._ran_choice = random.sample(data.keys(), len(data.keys()))
+        return TestAction(self._ran_choice)

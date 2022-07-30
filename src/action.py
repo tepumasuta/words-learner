@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from database import Database
+from collections import namedtuple
 
 class IAction(ABC):
     @abstractmethod
@@ -6,11 +8,14 @@ class IAction(ABC):
         ...
 
 
-class TestAction(IAction):
-    # TODO: implement TestAction constructor
-    def __init__(self, *params):
-        assert False, 'Not implemented yet'
+class PerformTestAction(IAction):
+    def __init__(self, keys: list[str], database: Database):
+        self.result = []
+        self._keys = keys
+        self._data = database
     
-    # TODO: implement TestAction act
-    def act(self, model: 'Model', view):
-        assert False, 'Not implemeted yet'
+    def act(self, model: 'Model', view: 'View'):
+        for key in self._keys:
+            expected_values = set(self._data[key].contents)
+            answer = view.input.question(key)
+            self.result.append((key, answer, answer in expected_values, expected_values))

@@ -4,6 +4,7 @@ import pathlib
 from dataclasses import dataclass
 from database import DatabasesView
 from display import IDisplay
+from inputs import IInput
 from testmethod import ITestmethod
 from serialize import ISerializer
 from common import _type_check
@@ -19,6 +20,7 @@ class Model:
 @dataclass(slots=True)
 class View:
     display: IDisplay
+    input: IInput
 
 
 class Configuration:

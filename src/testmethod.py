@@ -1,6 +1,6 @@
 import random
 from abc import ABC, abstractmethod
-from action import IAction, TestAction
+from action import IAction, PerformTestAction
 from database import Database
 
 
@@ -16,9 +16,9 @@ class BasicTestmethod(ITestmethod):
     def __init__(self):
         self._amount_keys = BasicTestmethod.KEYS_AMOUNT
 
-    def test(self, data: Database) -> TestAction:
+    def test(self, data: Database) -> PerformTestAction:
         if len(data.keys()) >= self._amount_keys:
-                self._ran_choice = random.sample(data.keys(), self._amount_keys)
+            self._ran_choice = random.sample(data.keys(), self._amount_keys)
         else:
-                self._ran_choice = random.sample(data.keys(), len(data.keys()))
-        return TestAction(self._ran_choice)
+            self._ran_choice = random.sample(data.keys(), len(data.keys()))
+        return PerformTestAction(self._ran_choice, data)

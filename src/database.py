@@ -1,6 +1,7 @@
 import datetime
 import os
 import pathlib
+import enum
 from dataclasses import dataclass, field, asdict
 from typing import Any
 from serialize import ISerializable, ISerializer
@@ -10,6 +11,7 @@ def _type_check(*params: tuple[Any, type, str, str]):
     for var, var_type, var_name, var_type_name in params:
         if not isinstance(var, var_type):
             raise TypeError(f"{var_name} must be {var_type_name}. Recieved `{var}` of type {type(var)}")
+
 
 @dataclass(slots=True)
 class Record(ISerializable):
@@ -65,21 +67,21 @@ class Database:
     def __contains__(self, key: str) -> bool:
         return key in self._data
 
-    def get(self, key: str, default_value: Any) -> tuple[Record, ...] | Any:
+    def get(self, key: str, default_value: Any) -> Record | Any:
         _type_check((key, str, 'Key', 'a string'))
         
         if key not in self:
             return default_value
         
-        return tuple(entry.copy() for entry in self._data[key])
+        return self._data[key].copy()
 
-    def __getitem__(self, key: str) -> tuple[Record, ...]:
+    def __getitem__(self, key: str) -> Record:
         _type_check((key, str, 'Key', 'a string'))
 
         if key not in self:
             raise KeyError(f"Key `{key}` not found")
 
-        return tuple(entry.copy() for entry in self._data[key])
+        return self._data[key].copy()
 
     def add(self, key: str, value: str, date: datetime.date = None, repeated_times: int = 0):
         if date is None:
@@ -127,6 +129,10 @@ class Database:
 
 
 class DatabasesView:
+    class ModeType(enum.Enum):
+        EXTEND = enum.auto()
+        OVERRIDE = enum.auto()
+    
     def __init__(self, links: dict[str, list[tuple[Database, dict]]], *databases):
         self._databases: dict[str, Database] = {db.name: db for db in databases}
         self._links = links
@@ -231,3 +237,35 @@ class DatabasesView:
                         break
                 self._links[key].pop(i)
         self._databases.pop(db_name)
+
+    def merge(self, db_name_from: str, db_name_to: str, mode: 'DatabasesView.ModeType' = ModeType.EXTEND):
+        _type_check((db_name_from, str, 'Database name', 'a string'),
+                    (db_name_to, str, 'Database name', 'a string'),
+                    (mode, DatabasesView.ModeType, 'Mode', 'a mode type'))
+        
+        if db_name_from not in self._databases:
+            raise KeyError(f"Database `{db_name_from}` not found")
+        if db_name_to not in self._databases:
+            raise KeyError(f"Database `{db_name_to}` not found")
+        
+        data = self._databases[db_name_from]
+        out = self._databases[db_name_to]
+
+        for key in data.keys():
+            record = data[key]
+            
+            if mode == DatabasesView.ModeType.OVERRIDE:
+                if key in out:
+                    out.remove(key)
+                
+                for val in record:
+                    out.add(key, val, record.last_update_date, record.repeated_times)
+            elif mode == DatabasesView.ModeType.EXTEND:
+                date = max(out[key].last_update_date, record.last_update_date)
+                repeated_times = out[key].repeated_times + record.repeated_times
+                
+                for val in record.contents:
+                    if val in out[key].contents:
+                        continue
+                    
+                    out.add(key, val, date, repeated_times)

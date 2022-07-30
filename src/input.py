@@ -11,5 +11,5 @@ class IInput(ABC):
         ...
 
     @abstractmethod
-    def question(self, display: "Display"):
+    def question(self, display: "IDisplay"):
         ...

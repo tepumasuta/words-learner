@@ -3,6 +3,7 @@ import yaml
 import pathlib
 from dataclasses import dataclass
 from database import DatabasesView
+from display import IDisplay
 from testmethod import ITestmethod
 from serialize import ISerializer
 from common import _type_check
@@ -13,6 +14,11 @@ class Model:
     serializer: ISerializer
     testmethod: ITestmethod
     databases: DatabasesView
+
+
+@dataclass(slots=True)
+class View:
+    display: IDisplay
 
 
 class Configuration:

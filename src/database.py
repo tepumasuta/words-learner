@@ -118,8 +118,8 @@ class Database:
 
         try:
             self._data[key].contents.remove(value)
-        except ValueError:
-            raise KeyError(f'Value `{value}` not found at {key}')
+        except ValueError as err:
+            raise KeyError(f'Value `{value}` not found at {key}') from err
     
     def keys(self):
         return tuple(self._data.keys())

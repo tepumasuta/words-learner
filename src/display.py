@@ -1,18 +1,17 @@
 from abc import ABC, abstractmethod
 
 class IDisplay(ABC):
+    @staticmethod
     @abstractmethod
-    def __init__(self):
+    def print(self, str: str):
         ...
 
+    @staticmethod
     @abstractmethod
-    def print(self):
+    def error(self,  str: str):
         ...
 
+    @staticmethod
     @abstractmethod
-    def error(self):
-        ...
-
-    @abstractmethod
-    def log(self):
+    def log(self,  str: str):
         ...        

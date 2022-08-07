@@ -3,9 +3,10 @@ from pickle import PickleBuffer
 import yaml
 import pathlib
 from dataclasses import dataclass
+from action import IAction
 from database import DatabasesView
-from display import IDisplay
-from inputs import IInput
+from display import IDisplay, TerminalDisplay
+from inputs import IInput, TerminalInput
 from serialize import ISerializer, PickleSerializer
 from common import _type_check
 
@@ -79,12 +80,12 @@ class Application:
 
     @staticmethod
     def from_config(configuration: Configuration):
-        dict_serialize = {'pickle': PickleSerializer}
-        dict_serialize[configuration.settings['db-format']]
-            return Application(PickleSerializer)
+        dict_classes = {'pickle': PickleSerializer(), 'test': 'ITestmethod'}
+        dict_classes[configuration.settings['db-format']]
+        return Application.create(dict_classes[configuration.settings['db-format']], dict_classes[configuration.settings['test']], configuration, TerminalDisplay, TerminalInput)
 
-    def perform(self):
-        ...
+    def perform(self, action: IAction):
+        action.act(self._model, self._view)
 
     def exit(self):
         ...

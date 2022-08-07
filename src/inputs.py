@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from action import IAction, TestAction
+from parser import PARSER
 
 class IInput(ABC):
     @abstractmethod
@@ -6,7 +8,7 @@ class IInput(ABC):
         ...
 
     @abstractmethod
-    def get_action(self) -> 'IAction':
+    def get_action(self, args: list[str]) -> IAction:
         ...
 
     @abstractmethod
@@ -17,9 +19,13 @@ class TerminalInput(IInput):
     def __init__(self):
         ...
 
-    # TODO: implement get action
-    def get_action(self) -> 'IAction':
-        ...
+    def get_action(self, args: list[str]) -> IAction:
+        ns = PARSER.parse_args(args)
+        
+        if 'test' in ns:
+            return TestAction(ns.db)
+
+        # TODO: implement database action
 
     def question(self, display: "TerminalDisplay", string: str | None = None):
         if string is not None:

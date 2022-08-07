@@ -66,18 +66,18 @@ class View:
 class Application:
     def __init__(self, input_device: IInput, serializer: ISerializer, testmethod: 'ITestmethod', configuration: Configuration, display: IDisplay):
         self._model = Model(serializer, testmethod, DatabasesView({}), configuration)
-        self._view = View(display, input)
+        self._view = View(display, input_device)
         self._input_device = input_device
 
     def run(self):
-        
+        self.perform(self._input_device.get_action())
 
     @staticmethod
     def from_config(configuration: Configuration):
         ...
 
     def perform(self):
-        ...
+        
 
     def exit(self):
         ...

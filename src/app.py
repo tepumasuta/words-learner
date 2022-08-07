@@ -9,19 +9,6 @@ from serialize import ISerializer
 from common import _type_check
 
 
-@dataclass(slots=True)
-class Model:
-    serializer: ISerializer
-    testmethod: 'ITestmethod'
-    databases: DatabasesView
-
-
-@dataclass(slots=True)
-class View:
-    display: IDisplay
-    input: IInput
-
-
 class Configuration:
     POSSIBLE_SETTINGS = 'databases', 'test', 'db-format'
     DEFAULT_PATH = os.path.expanduser('~/.wordslearner/config.yaml')
@@ -60,3 +47,38 @@ class Configuration:
         
         with open(Configuration.DEFAULT_PATH, 'w') as config:
             yaml.dump(self.settings, config)
+
+
+@dataclass(slots=True)
+class Model:
+    serializer: ISerializer
+    testmethod: 'ITestmethod'
+    databases: DatabasesView
+    configuration: Configuration
+
+
+@dataclass(slots=True)
+class View:
+    display: IDisplay
+    input: IInput
+
+
+class Application:
+    def __init__(self, input_device: IInput, serializer: ISerializer, testmethod: 'ITestmethod', configuration: Configuration, display: IDisplay):
+        self._model = Model(serializer, testmethod, DatabasesView({}), configuration)
+        self._view = View(display, input)
+        self._input_device = input_device
+
+    def run(self):
+        
+
+    @staticmethod
+    def from_config(configuration: Configuration):
+        ...
+
+    def perform(self):
+        ...
+
+    def exit(self):
+        ...
+    

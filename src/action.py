@@ -8,6 +8,17 @@ class IAction(ABC):
         ...
 
 
+class TestAction(IAction):
+    def __init__(self, database: Database):
+        self._db = Database
+    
+    def act(self, model: Model, view: View):
+        performed_action: PerformTestAction = model.testmethod.test(self._db)
+        performed_action.act(model, view)
+        result_action = ResultTestAction(performed_action.result)
+        result_action.act(model, view)
+
+
 class PerformTestAction(IAction):
     def __init__(self, keys: list[str], database: Database):
         self.result = []

@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from database import DatabasesView
 from display import IDisplay
 from inputs import IInput
-from testmethod import ITestmethod
 from serialize import ISerializer
 from common import _type_check
 
@@ -13,7 +12,7 @@ from common import _type_check
 @dataclass(slots=True)
 class Model:
     serializer: ISerializer
-    testmethod: ITestmethod
+    testmethod: 'ITestmethod'
     databases: DatabasesView
 
 

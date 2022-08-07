@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from action import IAction
 
 class IInput(ABC):
     @abstractmethod
@@ -7,7 +6,7 @@ class IInput(ABC):
         ...
 
     @abstractmethod
-    def get_action(self) -> IAction:
+    def get_action(self) -> 'IAction':
         ...
 
     @abstractmethod
@@ -19,7 +18,7 @@ class TerminalInput(IInput):
         ...
 
     # TODO: implement get action
-    def get_action(self) -> IAction:
+    def get_action(self) -> 'IAction':
         ...
 
     def question(self, display: "TerminalDisplay", string: str | None = None):

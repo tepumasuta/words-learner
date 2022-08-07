@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from database import Database
-from collections import namedtuple
+from app import Model, View
 
 class IAction(ABC):
     @abstractmethod
-    def act(self, model: 'Model', view: 'View'):
+    def act(self, model: Model, view: View):
         ...
 
 
@@ -14,7 +14,7 @@ class PerformTestAction(IAction):
         self._keys = keys
         self._data = database
     
-    def act(self, model: 'Model', view: 'View'):
+    def act(self, model: Model, view: View):
         for key in self._keys:
             expected_values = set(self._data[key].contents)
             answer = view.input.question(f'{key}\n')
@@ -25,7 +25,7 @@ class ResultTestAction(IAction):
     def __init__(self, results: list[str, str, bool, list[str]]):
         self._results = results
     
-    def act(self, model: 'Model', view: 'View'):
+    def act(self, model: Model, view: View):
         total_score = sum(entry[2] for entry in self.result)
         max_score = len(self._results)
         percentage = 100 * total_score / max_score

@@ -1,11 +1,13 @@
 import os
+from pickle import PickleBuffer
 import yaml
 import pathlib
 from dataclasses import dataclass
+from action import IAction
 from database import DatabasesView
-from display import IDisplay
-from inputs import IInput
-from serialize import ISerializer
+from display import IDisplay, TerminalDisplay
+from inputs import IInput, TerminalInput
+from serialize import ISerializer, PickleSerializer
 from common import _type_check
 
 
@@ -64,20 +66,26 @@ class View:
 
 
 class Application:
-    def __init__(self, input_device: IInput, serializer: ISerializer, testmethod: 'ITestmethod', configuration: Configuration, display: IDisplay):
-        self._model = Model(serializer, testmethod, DatabasesView({}), configuration)
-        self._view = View(display, input_device)
+    def __init__(self, input_device: IInput, model: Model, view: View):
+        self._model = model
+        self._view = view
         self._input_device = input_device
+
+    @staticmethod
+    def create(serializer: ISerializer, testmethod: 'ITestmethod', configuration: Configuration, display: IDisplay, input_device = IInput):
+        return Application(Model(serializer, testmethod, DatabasesView({}), configuration), View(display, input_device), input_device) 
 
     def run(self):
         self.perform(self._input_device.get_action())
 
     @staticmethod
     def from_config(configuration: Configuration):
-        ...
+        dict_classes = {'pickle': PickleSerializer(), 'test': 'ITestmethod'}
+        dict_classes[configuration.settings['db-format']]
+        return Application.create(dict_classes[configuration.settings['db-format']], dict_classes[configuration.settings['test']], configuration, TerminalDisplay, TerminalInput)
 
-    def perform(self):
-        ...
+    def perform(self, action: IAction):
+        action.act(self._model, self._view)
 
     def exit(self):
         ...

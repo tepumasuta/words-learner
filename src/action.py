@@ -1,19 +1,23 @@
 from abc import ABC, abstractmethod
 from database import Database
-from app import Model, View
 
 class IAction(ABC):
     @abstractmethod
-    def act(self, model: Model, view: View):
+    def act(self, model: 'Model', view: 'View'):
         ...
 
 
 class TestAction(IAction):
-    def __init__(self, database: Database):
-        self._db = Database
+    def __init__(self, database: str):
+        self._db_name = database
     
-    def act(self, model: Model, view: View):
-        performed_action: PerformTestAction = model.testmethod.test(self._db)
+    def act(self, model: 'Model', view: 'View'):
+        # TODO: implement error action
+        if self._db_name not in model.databases:
+            return
+        
+        db = model.databases.get_database(self._db_name)
+        performed_action: PerformTestAction = model.testmethod.test(db)
         performed_action.act(model, view)
         result_action = ResultTestAction(performed_action.result)
         result_action.act(model, view)
@@ -25,7 +29,7 @@ class PerformTestAction(IAction):
         self._keys = keys
         self._data = database
     
-    def act(self, model: Model, view: View):
+    def act(self, model: 'Model', view: 'View'):
         for key in self._keys:
             expected_values = set(self._data[key].contents)
             answer = view.input.question(f'{key}\n')
@@ -36,7 +40,7 @@ class ResultTestAction(IAction):
     def __init__(self, results: list[str, str, bool, list[str]]):
         self._results = results
     
-    def act(self, model: Model, view: View):
+    def act(self, model: 'Model', view: 'View'):
         total_score = sum(entry[2] for entry in self.result)
         max_score = len(self._results)
         percentage = 100 * total_score / max_score

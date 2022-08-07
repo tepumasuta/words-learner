@@ -1,5 +1,4 @@
 import os
-from pickle import PickleBuffer
 import yaml
 import pathlib
 from dataclasses import dataclass
@@ -71,6 +70,7 @@ class Application:
         self._view = view
         self._input_device = input_device
 
+    # TODO: supply databases
     @staticmethod
     def create(serializer: ISerializer, testmethod: 'ITestmethod', configuration: Configuration, display: IDisplay, input_device = IInput):
         return Application(Model(serializer, testmethod, DatabasesView({}), configuration), View(display, input_device), input_device) 
@@ -78,6 +78,7 @@ class Application:
     def run(self):
         self.perform(self._input_device.get_action())
 
+    # TODO: supply databases
     @staticmethod
     def from_config(configuration: Configuration):
         dict_classes = {'pickle': PickleSerializer(), 'test': 'ITestmethod'}

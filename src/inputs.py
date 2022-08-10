@@ -21,6 +21,11 @@ class TerminalInput(IInput):
         ...
 
     def get_action(self, args: list[str]) -> IAction:
+        # TODO: implement error action return
+        if not args:
+            ...
+            return IAction()
+
         for parser in PARSERS:
             try:
                 ns = parser.parse_args(args)
@@ -30,10 +35,13 @@ class TerminalInput(IInput):
         else:
             # TODO: implement error action return
             return IAction()
-        
+
         if 'test' in ns: return TestAction(ns.db)
+        # TODO: implement GetAction
         if 'get' in ns: return GetAction(ns.key)
+        # TODO: implement AddAction
         if 'add' in ns: return AddAction(ns.key, ns.values)
+        # TODO: implement RemoveAction
         if 'rm' in ns: return RemoveAction(ns.key, ns.values)
 
         # TODO: implement database action

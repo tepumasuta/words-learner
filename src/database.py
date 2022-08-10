@@ -132,14 +132,6 @@ class DatabasesView:
         self._databases: dict[str, Database] = {db.name: db for db in databases}
         self._links = links
     
-    def get_database(self, db_name: str) -> Database:
-        _type_check((db_name, str, 'Database name', 'a string'))
-        
-        if db_name not in self._databases:
-            raise KeyError(f'Database `{db_name}` not found')
-
-        return self._databases[db_name]
-    
     def get_db_names(self):
         return tuple(self._databases.keys())
 

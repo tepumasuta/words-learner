@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import argparse
-from action import IAction, TestAction
+from action import IAction, TestAction, GetAction
 from parser import PARSERS
 
 class IInput(ABC):
@@ -37,12 +37,11 @@ class TerminalInput(IInput):
             return IAction()
 
         if 'test' in ns: return TestAction(ns.db)
-        # TODO: implement GetAction
-        if 'get' in ns: return GetAction(ns.key)
+        if 'get' in ns: return GetAction(ns.db, ns.key)
         # TODO: implement AddAction
-        if 'add' in ns: return AddAction(ns.key, ns.values)
+        if 'add' in ns: return AddAction(ns.db, ns.key, ns.values)
         # TODO: implement RemoveAction
-        if 'rm' in ns: return RemoveAction(ns.key, ns.values)
+        if 'rm' in ns: return RemoveAction(ns.db, ns.key, ns.values)
 
         # TODO: implement database action
 

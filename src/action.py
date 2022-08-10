@@ -95,4 +95,21 @@ class ErrorAction(IAction):
         self._err_msg = err_msg
     
     def act(self, model: 'Model', view: 'View'):
-        view.display.error(self._err_msg)
+        view.display.print(', '.join(model.databases.get_db_names()))
+
+
+class AddAction(IAction):
+    def __init__(self, database: str, key: str):
+        self._db_name = database
+        self._key = key
+    
+    def act(self, model: 'Model', view: 'View'):
+        # TODO: implement error action
+        if self._db_name not in model.databases.get_db_names():
+            return IAction().act()
+
+        db = model.databases.get(self._db_name)
+        try:
+            db.add(self._key)
+        except ValueError:
+            return IAction().act()

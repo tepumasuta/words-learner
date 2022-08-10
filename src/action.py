@@ -57,3 +57,10 @@ class ListDatabasesAction(IAction):
 
     def act(self, model: 'Model', view: 'View'):
         view.display.print(', '.join(model.databases.get_db_names()))
+
+class AddAction(IAction):
+    def __init__(self, database: str):
+        self._db_name = database
+
+    def act(self, model: 'Model', view: 'View'):
+        db = model.databases.get_database(self._db_name)

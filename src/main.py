@@ -1,6 +1,6 @@
 import sys
 
-from app import Configuration
+from app import Configuration, Application
 
 
 def main():
@@ -19,6 +19,10 @@ def main():
         config = Configuration.from_path(args[0])
 
     args = args[1:]
+
+    app = Application.from_config(config)
+    app.run()
+    app.exit()
 
 
 if __name__ == '__main__':

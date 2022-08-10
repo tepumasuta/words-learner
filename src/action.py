@@ -51,6 +51,7 @@ class ResultTestAction(IAction):
         for key, answer, _, expected in wrong:
             view.display.print(f'{key} - {answer} (expected: {", ".join(expected)})\n')
 
+
 class GetAction(IAction):
     def __init__(self, database: str, key: str):
         self._db_name = database
@@ -68,3 +69,11 @@ class GetAction(IAction):
             view.display.print(f'Found values: {", ".join(vals.contents)}')
         else:
             view.display.print(vals)
+
+
+class ListDatabasesAction(IAction):
+    def __init__(self):
+        ...
+
+    def act(self, model: 'Model', view: 'View'):
+        view.display.print(', '.join(model.databases.get_db_names()))

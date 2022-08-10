@@ -71,7 +71,6 @@ class Application:
         self._view = view
         self._input_device = input_device
 
-    # TODO: supply databases
     @staticmethod
     def create(serializer: ISerializer,
                testmethod: 'ITestmethod',
@@ -90,7 +89,6 @@ class Application:
     def run(self):
         self.perform(self._input_device.get_action())
 
-    # TODO: supply databases
     @staticmethod
     def from_config(configuration: Configuration):
         serializers = {

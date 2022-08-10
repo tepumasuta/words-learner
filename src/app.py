@@ -89,5 +89,8 @@ class Application:
         action.act(self._model, self._view)
 
     def exit(self):
-        ...
+        self._model.configuration.dump()
+        self._model.databases.dump()
+
+
     

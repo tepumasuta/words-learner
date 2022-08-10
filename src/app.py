@@ -115,6 +115,3 @@ class Application:
     def exit(self):
         self._model.configuration.dump()
         self._model.databases.dump()
-
-
-    

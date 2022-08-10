@@ -42,7 +42,7 @@ class TerminalInput(IInput):
         if 'add' in ns: return AddAction(ns.db, ns.key, ns.values)
         # TODO: implement RemoveAction
         if 'rm' in ns: return RemoveAction(ns.db, ns.key, ns.values)
-        if 'list' in ns: return ListDatabasesAction()
+        if 'list' in ns: return ListDatabasesAction(ns.dbs)
 
         # TODO: implement database action
 

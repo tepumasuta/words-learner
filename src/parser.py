@@ -29,6 +29,6 @@ _parser_rm.add_argument('-V', '--values', nargs='*', type=str, metavar='<value>'
 _parser_list = argparse.ArgumentParser(prog='Words Learner List', exit_on_error=False)
 _parser_list.add_argument_group('List different things')
 _parser_list.add_argument('list', metavar='list', choices=['list'])
-# _parser_list.add_argument('-V', '--value', nargs='?', default='db', choices=['db'])
+_parser_list.add_argument('dbs', nargs='*', type=str, metavar='<database-name>')
 
 PARSERS = [_parser_test, _parser_get, _parser_add, _parser_rm, _parser_list]

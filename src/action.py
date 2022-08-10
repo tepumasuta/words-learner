@@ -68,12 +68,23 @@ class GetAction(IAction):
         if isinstance(vals, Record):
             view.display.print(f'Found values: {", ".join(vals.contents)}')
         else:
-            view.display.print(vals)
+            view.display.error(vals)
 
 
 class ListDatabasesAction(IAction):
-    def __init__(self):
-        ...
+    def __init__(self, databases: list[str]):
+        self._dbs = databases
 
     def act(self, model: 'Model', view: 'View'):
-        view.display.print(', '.join(model.databases.get_db_names()))
+        if not self._dbs:        
+            view.display.print('\n'.join(map(lambda x: '- ' + x, model.databases.get_db_names())))
+            return
+
+        db_names = set(model.databases.get_db_names())
+        
+        for db_name in self._dbs:
+            if db_name not in db_names:
+                view.display.error(f'No such database `{db_name}`')
+                continue
+            
+            view.display.print(', '.joib(model.databases.get(db_name).keys()))

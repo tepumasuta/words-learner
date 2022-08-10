@@ -88,3 +88,10 @@ class ListDatabasesAction(IAction):
                 continue
             
             view.display.print(', '.joib(model.databases.get(db_name).keys()))
+
+class ErrorAction(IAction):
+    def __init__(self, err_msg: str | Exception):
+        self._err_msg = err_msg
+    
+    def act(self, model: 'Model', view: 'View'):
+        view.display.error(self._err_msg)

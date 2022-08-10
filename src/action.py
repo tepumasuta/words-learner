@@ -50,3 +50,10 @@ class ResultTestAction(IAction):
         view.display.print('Guessed wrong:')
         for key, answer, _, expected in wrong:
             view.display.print(f'{key} - {answer} (expected: {", ".join(expected)})\n')
+
+class ListDatabasesAction(IAction):
+    def __init__(self):
+        ...
+
+    def act(self, model: 'Model', view: 'View'):
+        view.display.print(', '.join(model.databases.get_db_names()))

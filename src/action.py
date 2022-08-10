@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from database import Database
+from database import Database, Record
 
 class IAction(ABC):
     @abstractmethod
@@ -13,10 +13,10 @@ class TestAction(IAction):
     
     def act(self, model: 'Model', view: 'View'):
         # TODO: implement error action
-        if self._db_name not in model.databases:
-            return
+        if self._db_name not in model.databases.get_db_names():
+            return IAction().act()
         
-        db = model.databases.get_database(self._db_name)
+        db = model.databases.get(self._db_name)
         performed_action: PerformTestAction = model.testmethod.test(db)
         performed_action.act(model, view)
         result_action = ResultTestAction(performed_action.result)
@@ -51,16 +51,29 @@ class ResultTestAction(IAction):
         for key, answer, _, expected in wrong:
             view.display.print(f'{key} - {answer} (expected: {", ".join(expected)})\n')
 
+
+class GetAction(IAction):
+    def __init__(self, database: str, key: str):
+        self._db_name = database
+        self._key = key
+    
+    def act(self, model: 'Model', view: 'View'):
+        # TODO: implement error action
+        if self._db_name not in model.databases.get_db_names():
+            return IAction().act()
+
+        db = model.databases.get(self._db_name)
+        vals = db.get(self._key, f'No such key `{self._key}` found in database `{db.name}`')
+
+        if isinstance(vals, Record):
+            view.display.print(f'Found values: {", ".join(vals.contents)}')
+        else:
+            view.display.print(vals)
+
+
 class ListDatabasesAction(IAction):
     def __init__(self):
         ...
 
     def act(self, model: 'Model', view: 'View'):
         view.display.print(', '.join(model.databases.get_db_names()))
-
-class AddAction(IAction):
-    def __init__(self, database: str):
-        self._db_name = database
-
-    def act(self, model: 'Model', view: 'View'):
-        db = model.databases.get_database(self._db_name)

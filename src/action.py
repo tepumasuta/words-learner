@@ -9,14 +9,15 @@ class IAction(ABC):
 
 class TestAction(IAction):
     def __init__(self, database: str):
-        self._db_name = database
+        self._db_name = database[0]
     
     def act(self, model: 'Model', view: 'View'):
-        # TODO: implement error action
         if self._db_name not in model.databases.get_db_names():
-            return IAction().act()
+            ErrorAction(f'No such database `{self._db_name}` found').act(model, view)
+            return
         
-        db = model.databases.get(self._db_name)
+        db = model.databases.get_database(self._db_name)
+
         performed_action: PerformTestAction = model.testmethod.test(db)
         performed_action.act(model, view)
         result_action = ResultTestAction(performed_action.result)
@@ -58,9 +59,9 @@ class GetAction(IAction):
         self._key = key
     
     def act(self, model: 'Model', view: 'View'):
-        # TODO: implement error action
         if self._db_name not in model.databases.get_db_names():
-            return IAction().act()
+            ErrorAction(f'No such database `{self._db_name}`').act(model, view)
+            return
 
         db = model.databases.get(self._db_name)
         vals = db.get(self._key, f'No such key `{self._key}` found in database `{db.name}`')

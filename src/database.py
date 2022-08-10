@@ -135,6 +135,12 @@ class DatabasesView:
     def get_db_names(self):
         return tuple(self._databases.keys())
 
+    def get_database(self, db_name: str) -> Database:
+        if db_name not in self._databases:
+            raise KeyError(f"Database `{db_name}` not found")
+        
+        return self._databases[db_name]
+
     def update(self, db_name: str, key: str, values: list[str], parameters: dict[str, Any] = None):
         _type_check((db_name, str, 'Database name', 'a string'))
         

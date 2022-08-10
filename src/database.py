@@ -140,6 +140,9 @@ class DatabasesView:
 
         return self._databases[db_name]
     
+    def get_db_names(self):
+        return tuple(self._databases.keys())
+
     def update(self, db_name: str, key: str, values: list[str], parameters: dict[str, Any] = None):
         _type_check((db_name, str, 'Database name', 'a string'))
         

@@ -1,4 +1,5 @@
 import os
+from re import S
 import yaml
 import pathlib
 from dataclasses import dataclass
@@ -71,6 +72,12 @@ class Application:
         self._view = view
         self._input_device = input_device
         self._args = args
+
+    def __enter__(self):
+        self.run()
+
+    def __exit__(self):
+        self.exit()
 
     @staticmethod
     def create(serializer: ISerializer,

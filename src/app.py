@@ -83,7 +83,7 @@ class Application:
     def from_config(configuration: Configuration):
         dict_classes = {'pickle': PickleSerializer(), 'test': 'ITestmethod'}
         dict_classes[configuration.settings['db-format']]
-        return Application.create(dict_classes[configuration.settings['db-format']], dict_classes[configuration.settings['test']], configuration, TerminalDisplay, TerminalInput)
+        return Application.create(dict_classes[configuration.settings['db-format']], dict_classes[configuration.settings['test']], configuration, TerminalDisplay(), TerminalInput())
 
     def perform(self, action: IAction):
         action.act(self._model, self._view)

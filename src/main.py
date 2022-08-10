@@ -20,7 +20,7 @@ def main():
 
     args = args[1:]
 
-    app = Application.from_config(config)
+    app = Application.from_config(config, args)
     app.run()
     app.exit()
 

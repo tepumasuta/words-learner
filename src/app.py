@@ -67,10 +67,11 @@ class View:
 
 
 class Application:
-    def __init__(self, input_device: IInput, model: Model, view: View):
+    def __init__(self, model: Model, view: View, input_device: IInput, args: list[str]):
         self._model = model
         self._view = view
         self._input_device = input_device
+        self._args = args
 
     def __enter__(self):
         self.run()
@@ -84,6 +85,7 @@ class Application:
                configuration: Configuration,
                display: IDisplay,
                input_device: IInput,
+               args: list[str],
                *databases: list[Database]):
         return Application(Model(serializer,
                                  testmethod,
@@ -91,13 +93,14 @@ class Application:
                                  configuration),
                            View(display,
                                 input_device),
-                           input_device)
+                           input_device,
+                           args)
 
     def run(self):
-        self.perform(self._input_device.get_action())
+        self.perform(self._input_device.get_action(self._args))
 
     @staticmethod
-    def from_config(configuration: Configuration):
+    def from_config(configuration: Configuration, args: list[str]):
         serializers = {
             'pickle': PickleSerializer,
         }
@@ -112,6 +115,7 @@ class Application:
                                   configuration,
                                   TerminalDisplay(),
                                   TerminalInput(),
+                                  args,
                                   *settings['databases'])
 
     def perform(self, action: IAction):

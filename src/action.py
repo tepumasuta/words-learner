@@ -104,12 +104,13 @@ class AddAction(IAction):
         self._key = key
     
     def act(self, model: 'Model', view: 'View'):
-        # TODO: implement error action
         if self._db_name not in model.databases.get_db_names():
-            return IAction().act()
+            ErrorAction(f'No such database `{self._db_name}`')
+            return
 
         db = model.databases.get(self._db_name)
         try:
             db.add(self._key)
-        except ValueError:
-            return IAction().act()
+        except ValueError as e:
+            ErrorAction(e)
+            return

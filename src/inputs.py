@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import argparse
-from action import IAction, ListDatabasesAction, TestAction, GetAction
+from action import IAction, ListDatabasesAction, TestAction, GetAction, AddAction
 from parser import PARSERS
 
 class IInput(ABC):

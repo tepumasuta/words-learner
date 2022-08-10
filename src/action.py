@@ -95,8 +95,7 @@ class ErrorAction(IAction):
         self._err_msg = err_msg
     
     def act(self, model: 'Model', view: 'View'):
-        view.display.print(', '.join(model.databases.get_db_names()))
-
+        view.display.error(self._err_msg)
 
 class AddAction(IAction):
     def __init__(self, database: str, key: str):

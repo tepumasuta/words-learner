@@ -80,7 +80,7 @@ class Application:
                input_device: IInput,
                *databases: list[Database]):
         return Application(Model(serializer,
-                                 testmethod(),
+                                 testmethod,
                                  DatabasesView({}, *databases),
                                  configuration),
                            View(display,

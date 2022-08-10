@@ -3,10 +3,11 @@ import yaml
 import pathlib
 from dataclasses import dataclass
 from action import IAction
-from database import DatabasesView
+from database import Database, DatabasesView
 from display import IDisplay, TerminalDisplay
 from inputs import IInput, TerminalInput
 from serialize import ISerializer, PickleSerializer
+from testmethod import BasicTestmethod
 from common import _type_check
 
 
@@ -72,8 +73,19 @@ class Application:
 
     # TODO: supply databases
     @staticmethod
-    def create(serializer: ISerializer, testmethod: 'ITestmethod', configuration: Configuration, display: IDisplay, input_device = IInput):
-        return Application(Model(serializer, testmethod, DatabasesView({}), configuration), View(display, input_device), input_device) 
+    def create(serializer: ISerializer,
+               testmethod: 'ITestmethod',
+               configuration: Configuration,
+               display: IDisplay,
+               input_device: IInput,
+               *databases: list[Database]):
+        return Application(Model(serializer,
+                                 testmethod(),
+                                 DatabasesView({}, *databases),
+                                 configuration),
+                           View(display,
+                                input_device),
+                           input_device)
 
     def run(self):
         self.perform(self._input_device.get_action())
@@ -81,9 +93,21 @@ class Application:
     # TODO: supply databases
     @staticmethod
     def from_config(configuration: Configuration):
-        dict_classes = {'pickle': PickleSerializer(), 'test': 'ITestmethod'}
-        dict_classes[configuration.settings['db-format']]
-        return Application.create(dict_classes[configuration.settings['db-format']], dict_classes[configuration.settings['test']], configuration, TerminalDisplay, TerminalInput)
+        serializers = {
+            'pickle': PickleSerializer,
+        }
+        testmethods = {
+            'default': BasicTestmethod,
+        }
+        
+        settings = configuration.settings
+        
+        return Application.create(serializers[settings['db-format']](),
+                                  testmethods[settings['test']](),
+                                  configuration,
+                                  TerminalDisplay(),
+                                  TerminalInput(),
+                                  *settings['databases'])
 
     def perform(self, action: IAction):
         action.act(self._model, self._view)

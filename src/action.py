@@ -136,3 +136,15 @@ class PrintDatabaseAction(IAction):
 
         for key, value in db:
             print(f"{key} - {', '.join(value)}")
+
+
+class PrintAction(IAction):
+    def __init__(self, key: str, value: str | None = None):
+        self._key = key
+        self._value = value
+
+    def act(self, model: 'Model', view: 'View'):
+        if self._value is None:
+            Database.remove(self._key)
+        else:
+            

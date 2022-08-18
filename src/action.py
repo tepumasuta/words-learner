@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from ast import Mod
 from database import Database, Record
 
 class IAction(ABC):
@@ -113,3 +114,10 @@ class AddAction(IAction):
         except ValueError as e:
             ErrorAction(e)
             return
+
+class PrintAction(IAction):
+    def __init__(self, message: str):
+        self._message = message
+
+    def act(self, model: 'Model', view: 'View'):
+        view.display.print(self._message)

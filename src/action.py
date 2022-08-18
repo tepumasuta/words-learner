@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from ast import Mod
 from database import Database, Record
 
 class IAction(ABC):
@@ -98,9 +99,10 @@ class ErrorAction(IAction):
         view.display.error(self._err_msg)
 
 class AddAction(IAction):
-    def __init__(self, database: str, key: str):
+    def __init__(self, database: str, key: str, value: list):
         self._db_name = database
         self._key = key
+        self._value = value
     
     def act(self, model: 'Model', view: 'View'):
         if self._db_name not in model.databases.get_db_names():
@@ -108,11 +110,32 @@ class AddAction(IAction):
             return
 
         db = model.databases.get(self._db_name)
+        for value in self._value:    
+            try:
+                db.add(self._key, value)
+            except ValueError as e:
+                ErrorAction(e).act(model, view)
+        return
+
+class PrintAction(IAction):
+    def __init__(self, message: str):
+        self._message = message
+
+    def act(self, model: 'Model', view: 'View'):
+        view.display.print(self._message)
+
+class PrintDatabaseAction(IAction):
+    def __init__(self, db_name: str):
+        self._db_name = db_name
+
+    def act(self, model: 'Model', view: 'View'):
         try:
-            db.add(self._key)
-        except ValueError as e:
-            ErrorAction(e)
-            return
+            db = model.databases.get_database(self._db_name)
+        except KeyError as e:
+            ErrorAction(e).act(model, view)
+
+        for key, value in db:
+            print(f"{key} - {', '.join(value)}")
 
 class AttachDatabase(IAction):
     def __init__(self, db: Database, alias: str):

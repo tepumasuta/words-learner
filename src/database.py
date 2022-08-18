@@ -49,7 +49,12 @@ class Database:
         name, data = serializer.deserialize_list(path)
         name = StringSerializabe.deserialize(name).value
         data = DictSerializable.deserialize(data).value
-
+        
+        data = {
+            name: Record.deserialize(record)
+            for name, record in data.items()
+        }
+        
         return Database(path, serializer, name, data)
 
     @property
@@ -88,7 +93,7 @@ class Database:
                     (date, datetime.date, 'Date', 'a date'),
                     (repeated_times, int, 'Repeated times', 'int'))
 
-        if key in self and value in key[self]:
+        if key in self and value in self[key].contents:
             raise ValueError(f"Value is already in database at {key}. Trying to override it with `{value}`")
         if repeated_times < 0:
             raise ValueError(f'Repeated times must be greater than 0. Received: {repeated_times}')
@@ -127,7 +132,9 @@ class Database:
                 ...
 
         self._serializer.serialize_list([StringSerializabe(self._name), 
-                                         DictSerializable(self._data)], self._path)
+                                         DictSerializable({name: record.serialize()
+                                                           for name, record in self._data.items()})],
+                                        self._path)
 
 
 class DatabasesView:

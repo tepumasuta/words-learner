@@ -99,18 +99,18 @@ class ErrorAction(IAction):
         view.display.error(self._err_msg)
 
 class AddAction(IAction):
-    def __init__(self, database: str, key: str, value: list):
-        self._db_name = database
-        self._key = key
-        self._value = value
+    def __init__(self, database: list[str], key: list[str], values: list[str]):
+        self._db_name = database[0]
+        self._key = key[0]
+        self._values = values
     
     def act(self, model: 'Model', view: 'View'):
         if self._db_name not in model.databases.get_db_names():
             ErrorAction(f'No such database `{self._db_name}`')
             return
 
-        db = model.databases.get(self._db_name)
-        for value in self._value:    
+        db = model.databases.get_database(self._db_name)
+        for value in self._values:
             try:
                 db.add(self._key, value)
             except ValueError as e:
@@ -137,7 +137,7 @@ class PrintDatabaseAction(IAction):
         for key, value in db:
             print(f"{key} - {', '.join(value)}")
 
-class AttachDatabase(IAction):
+class AttachDatabaseAction(IAction):
     def __init__(self, db: Database, alias: str):
         self._db = db
         self._alias = alias
@@ -167,4 +167,4 @@ class CreateDatabaseAction(IAction):
 
         db = Database(self._path[0], model.serializer, self._db_name[0], {})
         
-        AttachDatabase(db, self._alias[0]).act(model, view)
+        AttachDatabaseAction(db, self._alias[0]).act(model, view)

@@ -4,7 +4,7 @@ import pathlib
 import enum
 from dataclasses import dataclass, field, asdict
 from typing import Any
-from serialize import ISerializable, ISerializer
+from serialize import ISerializable, ISerializer, StringSerializabe, DictSerializable
 from common import _type_check
 
 
@@ -46,9 +46,15 @@ class Database:
         if not os.path.exists(path):
             raise FileNotFoundError()
 
-        name, data = map(ISerializable.deserialize,
-                         serializer.deserialize_list(path))
-
+        name, data = serializer.deserialize_list(path)
+        name = StringSerializabe.deserialize(name).value
+        data = DictSerializable.deserialize(data).value
+        
+        data = {
+            name: Record.deserialize(record)
+            for name, record in data.items()
+        }
+        
         return Database(path, serializer, name, data)
 
     @property
@@ -87,7 +93,7 @@ class Database:
                     (date, datetime.date, 'Date', 'a date'),
                     (repeated_times, int, 'Repeated times', 'int'))
 
-        if key in self and value in key[self]:
+        if key in self and value in self[key].contents:
             raise ValueError(f"Value is already in database at {key}. Trying to override it with `{value}`")
         if repeated_times < 0:
             raise ValueError(f'Repeated times must be greater than 0. Received: {repeated_times}')
@@ -120,7 +126,15 @@ class Database:
         return tuple(self._data.keys())
 
     def dump(self):
-        self._serializer.serialize_list([self._name, self._data], self._path)
+        if not os.path.exists(self._path):
+            os.makedirs(os.path.dirname(self._path), exist_ok=True)
+            with open(self._path, 'w') as _:
+                ...
+
+        self._serializer.serialize_list([StringSerializabe(self._name), 
+                                         DictSerializable({name: record.serialize()
+                                                           for name, record in self._data.items()})],
+                                        self._path)
 
 
 class DatabasesView:
@@ -241,6 +255,15 @@ class DatabasesView:
                         break
                 self._links[key].pop(i)
         self._databases.pop(db_name)
+
+    def attach(self, db: Database):
+        _type_check((db, Database, 'Database', 'a database'))
+        
+        db_name = db.name
+        if db_name in self._databases:
+            raise KeyError(f'Database `{db_name}` is already in database')
+        
+        self._databases[db_name] = db
 
     def merge(self, db_name_from: str, db_name_to: str, mode: 'DatabasesView.ModeType' = ModeType.EXTEND):
         _type_check((db_name_from, str, 'Database name', 'a string'),

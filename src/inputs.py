@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import argparse
-from action import IAction, ListDatabasesAction, TestAction, GetAction, AddAction
+from action import *
 from parser import PARSERS
 
 class IInput(ABC):
@@ -43,6 +43,7 @@ class TerminalInput(IInput):
         # TODO: implement RemoveAction
         if 'rm' in ns: return RemoveAction(ns.db, ns.key, ns.values)
         if 'list' in ns: return ListDatabasesAction(ns.dbs)
+        if 'create' in ns: return CreateDatabaseAction(ns.db, ns.db_path, ns.db_alias or ns.db)
 
         # TODO: implement database action
 

@@ -31,4 +31,11 @@ _parser_list.add_argument_group('List different things')
 _parser_list.add_argument('list', metavar='list', choices=['list'])
 _parser_list.add_argument('dbs', nargs='*', type=str, metavar='<database-name>')
 
-PARSERS = [_parser_test, _parser_get, _parser_add, _parser_rm, _parser_list]
+_parser_create = argparse.ArgumentParser(prog='Words Learner Create', exit_on_error=False)
+_parser_create.add_argument_group('Create databases')
+_parser_create.add_argument('create', metavar='create', choices=['create'])
+_parser_create.add_argument('db', nargs=1, type=str, metavar='<database-name>')
+_parser_create.add_argument('db_path', nargs=1, type=str, metavar='<database-path>')
+_parser_create.add_argument('db_alias', nargs='?', type=str, metavar='<alias>')
+
+PARSERS = [_parser_test, _parser_get, _parser_add, _parser_rm, _parser_list, _parser_create]

@@ -27,6 +27,17 @@ class StringSerializabe(ISerializable):
     def deserialize(raw: dict) -> 'StringSerializabe':
         return StringSerializabe(raw['value'])
 
+@dataclass
+class DictSerializable(ISerializable):
+    value: dict
+    
+    def serialize(self) -> dict:
+        return asdict(self)
+
+    @staticmethod
+    def deserialize(raw: dict) -> 'StringSerializabe':
+        return DictSerializable(raw['value'])
+
 class ISerializer(ABC):
     @staticmethod
     @abstractmethod
@@ -45,7 +56,7 @@ class PickleSerializer(ISerializer):
         if not os.path.exists(path):
             raise OSError()
         
-        with open(path) as out:
+        with open(path, 'wb') as out:
             pickle.dump([obj.serialize() for obj in objs], out)
     
     @staticmethod
@@ -54,7 +65,7 @@ class PickleSerializer(ISerializer):
             raise FileNotFoundError(f"File `{path}` not found")
         
         res: list[ISerializable]
-        with open(path) as data:
+        with open(path, 'rb') as data:
             res = pickle.load(data)
 
-        return [obj.deserialize() for obj in res]
+        return res

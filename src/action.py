@@ -138,7 +138,7 @@ class PrintDatabaseAction(IAction):
             print(f"{key} - {', '.join(value)}")
 
 
-class PrintAction(IAction):
+class RemoveKeyAction(IAction):
     def __init__(self, key: str, value: str | None = None):
         self._key = key
         self._value = value
@@ -147,4 +147,5 @@ class PrintAction(IAction):
         if self._value is None:
             Database.remove(self._key)
         else:
+            ...
             

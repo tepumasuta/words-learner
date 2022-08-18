@@ -242,6 +242,15 @@ class DatabasesView:
                 self._links[key].pop(i)
         self._databases.pop(db_name)
 
+    def attach(self, db: Database):
+        _type_check((db, Database, 'Database', 'a database'))
+        
+        db_name = db.name
+        if db_name in self._databases:
+            raise KeyError(f'Database `{db_name}` is already in database')
+        
+        self._databases[db_name] = db
+
     def merge(self, db_name_from: str, db_name_to: str, mode: 'DatabasesView.ModeType' = ModeType.EXTEND):
         _type_check((db_name_from, str, 'Database name', 'a string'),
                     (db_name_to, str, 'Database name', 'a string'),

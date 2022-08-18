@@ -32,7 +32,21 @@ class Configuration:
             if setting not in set(Configuration.POSSIBLE_SETTINGS):
                 raise ValueError(f'Wrong setting: {setting}')
 
-        return Configuration(data)
+        new_settings = {
+            setting: value
+            for setting, value in data.items()
+            if setting != 'databases'
+        }
+
+        new_settings['databases'] = []
+
+        for alias, options in data['databases'].items():
+            new_settings['databases'].append({
+                'alias': alias,
+                **options
+            })
+
+        return Configuration(new_settings)
     
     def update(self, settings: dict):
         _type_check((settings, dict, 'Settings', 'a dictionary'))
@@ -47,8 +61,22 @@ class Configuration:
         if not os.path.exists(os.path.expanduser('~/.wordslearner/')):
             os.mkdir(os.path.expanduser('~/.wordslearner/'))
         
+        dump_settings = {
+            setting: value
+            for setting, value in self.settings.items()
+            if setting != 'databases'
+        }
+        dump_settings['databases'] = {}
+
+        for db_conf in self.settings['databases']:
+            dump_settings['databases'][db_conf['alias']] = {
+                setting: value
+                for setting, value in db_conf.items()
+                if setting != 'alias'
+            }
+
         with open(Configuration.DEFAULT_PATH, 'w') as config:
-            yaml.dump(self.settings, config)
+            yaml.dump(dump_settings, config)
 
 
 @dataclass(slots=True)
@@ -108,14 +136,15 @@ class Application:
         }
         
         settings = configuration.settings
+        serializer = serializers[settings['db-format']]()
         
-        return Application.create(serializers[settings['db-format']](),
+        return Application.create(serializer,
                                   testmethods[settings['test']](),
                                   configuration,
                                   TerminalDisplay(),
                                   TerminalInput(),
                                   args,
-                                  *settings['databases'])
+                                  *[Database.load(db['path'], serializer) for db in settings['databases']])
 
     def perform(self, action: IAction):
         action.act(self._model, self._view)

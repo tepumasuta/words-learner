@@ -77,7 +77,7 @@ class ListDatabasesAction(IAction):
         self._dbs = databases
 
     def act(self, model: 'Model', view: 'View'):
-        if not self._dbs:        
+        if not self._dbs:
             view.display.print('\n'.join(map(lambda x: '- ' + x, model.databases.get_db_names())))
             return
 
@@ -88,7 +88,7 @@ class ListDatabasesAction(IAction):
                 view.display.error(f'No such database `{db_name}`')
                 continue
             
-            view.display.print(', '.joib(model.databases.get(db_name).keys()))
+            view.display.print(', '.join(model.databases.get_database(db_name).keys()))
 
 class ErrorAction(IAction):
     def __init__(self, err_msg: str | Exception):
@@ -113,3 +113,35 @@ class AddAction(IAction):
         except ValueError as e:
             ErrorAction(e)
             return
+
+class AttachDatabase(IAction):
+    def __init__(self, db: Database, alias: str):
+        self._db = db
+        self._alias = alias
+
+    def act(self, model: 'Model', view: 'View'):
+        try:
+            model.databases.attach(self._db)
+        except KeyError as e:
+            ErrorAction(e).act(model, view)
+            return
+
+        model.configuration.update({'databases': [*model.configuration.settings['databases'],
+                                                  {'path': self._db.path,
+                                                   'alias': self._alias}]})
+
+
+class CreateDatabaseAction(IAction):
+    def __init__(self, database: list[str], path: list[str], alias: list[str]):
+        self._db_name = database
+        self._path = path
+        self._alias = alias
+    
+    def act(self, model: 'Model', view: 'View'):
+        if self._db_name in model.databases.get_db_names():
+            ErrorAction(f'There already is `{self._db_name}` database')
+            return
+
+        db = Database(self._path[0], model.serializer, self._db_name[0], {})
+        
+        AttachDatabase(db, self._alias[0]).act(model, view)

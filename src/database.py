@@ -4,7 +4,7 @@ import pathlib
 import enum
 from dataclasses import dataclass, field, asdict
 from typing import Any
-from serialize import ISerializable, ISerializer
+from serialize import ISerializable, ISerializer, StringSerializabe, DictSerializable
 from common import _type_check
 
 
@@ -46,8 +46,9 @@ class Database:
         if not os.path.exists(path):
             raise FileNotFoundError()
 
-        name, data = map(ISerializable.deserialize,
-                         serializer.deserialize_list(path))
+        name, data = serializer.deserialize_list(path)
+        name = StringSerializabe.deserialize(name).value
+        data = DictSerializable.deserialize(data).value
 
         return Database(path, serializer, name, data)
 
@@ -120,7 +121,13 @@ class Database:
         return tuple(self._data.keys())
 
     def dump(self):
-        self._serializer.serialize_list([self._name, self._data], self._path)
+        if not os.path.exists(self._path):
+            os.makedirs(os.path.dirname(self._path), exist_ok=True)
+            with open(self._path, 'w') as _:
+                ...
+
+        self._serializer.serialize_list([StringSerializabe(self._name), 
+                                         DictSerializable(self._data)], self._path)
 
 
 class DatabasesView:

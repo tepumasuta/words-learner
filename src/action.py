@@ -99,9 +99,10 @@ class ErrorAction(IAction):
         view.display.error(self._err_msg)
 
 class AddAction(IAction):
-    def __init__(self, database: str, key: str):
+    def __init__(self, database: str, key: str, value: list):
         self._db_name = database
         self._key = key
+        self._value = value
     
     def act(self, model: 'Model', view: 'View'):
         if self._db_name not in model.databases.get_db_names():
@@ -109,11 +110,12 @@ class AddAction(IAction):
             return
 
         db = model.databases.get(self._db_name)
-        try:
-            db.add(self._key)
-        except ValueError as e:
-            ErrorAction(e)
-            return
+        for value in self._value:    
+            try:
+                db.add(self._key, value)
+            except ValueError as e:
+                ErrorAction(e).act(model, view)
+        return
 
 class PrintAction(IAction):
     def __init__(self, message: str):

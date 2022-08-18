@@ -121,3 +121,16 @@ class PrintAction(IAction):
 
     def act(self, model: 'Model', view: 'View'):
         view.display.print(self._message)
+
+class PrintDatabaseAction(IAction):
+    def __init__(self, db_name: str):
+        self._db_name = db_name
+
+    def act(self, model: 'Model', view: 'View'):
+        try:
+            db = model.databases.get_database(self._db_name)
+        except KeyError as e:
+            ErrorAction(e).act(model, view)
+
+        for key, value in db:
+            print(f"{key} - {', '.join(value)}")

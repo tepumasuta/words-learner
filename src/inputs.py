@@ -39,7 +39,6 @@ class TerminalInput(IInput):
 
         if 'test' in ns: return TestAction(ns.db)
         if 'get' in ns: return GetAction(ns.db, ns.key)
-        # TODO: implement AddAction
         if 'add' in ns: return AddAction(ns.db, ns.key, ns.values)
         # TODO: implement RemoveAction
         if 'rm' in ns: return RemoveAction(ns.db, ns.key, ns.values)

@@ -39,12 +39,12 @@ class TerminalInput(IInput):
 
         if 'test' in ns: return TestAction(ns.db)
         if 'get' in ns: return GetAction(ns.db, ns.key)
-        # TODO: implement AddAction
         if 'add' in ns: return AddAction(ns.db, ns.key, ns.values)
         # TODO: implement RemoveAction
         if 'rm' in ns: return RemoveAction(ns.db, ns.key, ns.values)
         if 'list' in ns: return ListDatabasesAction(ns.dbs)
         if 'create' in ns: return CreateDatabaseAction(ns.db, ns.db_path, ns.db_alias or ns.db)
+        if 'print' in ns: return PrintDatabaseAction(ns.db)
 
         # TODO: implement database action
 

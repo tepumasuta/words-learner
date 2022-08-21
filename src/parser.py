@@ -38,4 +38,10 @@ _parser_create.add_argument('db', nargs=1, type=str, metavar='<database-name>')
 _parser_create.add_argument('db_path', nargs=1, type=str, metavar='<database-path>')
 _parser_create.add_argument('db_alias', nargs='?', type=str, metavar='<alias>')
 
-PARSERS = [_parser_test, _parser_get, _parser_add, _parser_rm, _parser_list, _parser_create]
+_parser_print = argparse.ArgumentParser(prog='Words Learner Print', exit_on_error=False)
+_parser_print.add_argument_group('Print databases')
+_parser_print.add_argument('print', metavar='print', choices=['print'])
+_parser_print.add_argument('db', nargs=1, type=str, metavar='<database-name>')
+
+PARSERS = [_parser_test, _parser_get, _parser_add, _parser_rm, _parser_list, _parser_create,
+           _parser_print]

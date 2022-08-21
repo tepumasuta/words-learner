@@ -84,6 +84,10 @@ class Database:
 
         return self._data[key].copy()
 
+    def __iter__(self):
+        for word, record in self._data.items():
+            yield word, record.contents
+
     def add(self, key: str, value: str, date: datetime.date = None, repeated_times: int = 0):
         if date is None:
             date = datetime.date.today()

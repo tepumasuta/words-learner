@@ -21,20 +21,21 @@ class TerminalInput(IInput):
         ...
 
     def get_action(self, args: list[str]) -> IAction:
-        # TODO: implement error action return
+        # TODO: implement get_help()
         if not args:
-            ...
-            return IAction()
+            return ChainAction(ErrorAction('No arguments provided'),
+                               PrintAction('Should print help'))
 
         for parser in PARSERS:
             try:
                 ns = parser.parse_args(args)
                 break
-            except (argparse.ArgumentError, argparse.ArgumentTypeError) as e:
+            except (argparse.ArgumentError, argparse.ArgumentTypeError) as _:
                 continue
         else:
-            # TODO: implement error action return
-            return IAction()
+            # TODO: implement get_help()
+            return ChainAction(ErrorAction(f'Unknown action: {args[0]}'),
+                               PrintAction('Should print help'))
 
         if 'test' in ns: return TestAction(ns.db)
         if 'get' in ns: return GetAction(ns.db, ns.key)

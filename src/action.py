@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from configparser import ConfigParser
 from database import Database, Record
 
 
@@ -140,16 +141,19 @@ class PrintDatabaseAction(IAction):
             print(f"{key} - {', '.join(value)}")
 
 
-class RemoveKeyAction(IAction):
-    def __init__(self, key: str, value: str | None = None):
+class RemoveAction(IAction):
+    def __init__(self, db_name: str, key: str, value: str | None = None):
+        self._db_name = db_name
         self._key = key
         self._value = value
 
     def act(self, model: 'Model', view: 'View'):
-        if self._value is None:
-            Database.remove(self._key)
-        else:
-            ...
+        if self._db_name not in model.databases.get_db_names():
+            ErrorAction(f'No such database `{self._db_name}`').act(model, view)
+            return
+        model.databases.get_database(self._db_name).remove(self._key, self._value)
+
+        print(model.configuration.settings)            
 
 class ChainAction(IAction):
     def __init__(self, *actions: IAction):

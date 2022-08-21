@@ -34,7 +34,7 @@ class PerformTestAction(IAction):
     def act(self, model: 'Model', view: 'View'):
         for key in self._keys:
             expected_values = set(self._data[key].contents)
-            answer = view.input.question(f'{key}\n')
+            answer = view.input.question(view.display, f'{key}\n')
             self.result.append((key, answer, answer in expected_values, expected_values))
 
 
@@ -43,28 +43,29 @@ class ResultTestAction(IAction):
         self._results = results
     
     def act(self, model: 'Model', view: 'View'):
-        total_score = sum(entry[2] for entry in self.result)
+        total_score = sum(entry[2] for entry in self._results)
         max_score = len(self._results)
         percentage = 100 * total_score / max_score
-        wrong = list(filter(lambda x: x[2], self._results))
+        wrong = list(filter(lambda x: not x[2], self._results))
         
         view.display.print(f'\nAnswered correctly: {total_score}/{max_score} ({percentage:.1f})\n')
-        view.display.print('Guessed wrong:')
+        if wrong:
+            view.display.print('Guessed wrong:')
         for key, answer, _, expected in wrong:
             view.display.print(f'{key} - {answer} (expected: {", ".join(expected)})\n')
 
 
 class GetAction(IAction):
     def __init__(self, database: str, key: str):
-        self._db_name = database
-        self._key = key
+        self._db_name = database[0]
+        self._key = key[0]
     
     def act(self, model: 'Model', view: 'View'):
         if self._db_name not in model.databases.get_db_names():
             ErrorAction(f'No such database `{self._db_name}`').act(model, view)
             return
 
-        db = model.databases.get(self._db_name)
+        db = model.databases.get_database(self._db_name)
         vals = db.get(self._key, f'No such key `{self._key}` found in database `{db.name}`')
 
         if isinstance(vals, Record):
@@ -89,7 +90,7 @@ class ListDatabasesAction(IAction):
                 view.display.error(f'No such database `{db_name}`')
                 continue
             
-            view.display.print(', '.joib(model.databases.get(db_name).keys()))
+            view.display.print(', '.join(model.databases.get_database(db_name).keys()))
 
 class ErrorAction(IAction):
     def __init__(self, err_msg: str | Exception):
@@ -109,16 +110,16 @@ class PrintAction(IAction):
 
 class AddAction(IAction):
     def __init__(self, database: str, key: str, value: list):
-        self._db_name = database
-        self._key = key
+        self._db_name = database[0]
+        self._key = key[0]
         self._value = value
     
     def act(self, model: 'Model', view: 'View'):
         if self._db_name not in model.databases.get_db_names():
-            ErrorAction(f'No such database `{self._db_name}`')
+            ErrorAction(f'No such database `{self._db_name}`').act(model, view)
             return
 
-        db = model.databases.get(self._db_name)
+        db = model.databases.get_database(self._db_name)
         for value in self._value:    
             try:
                 db.add(self._key, value)
@@ -158,3 +159,35 @@ class ChainAction(IAction):
     def act(self, model: 'Model', view: 'View'):
         for action in self._actions:
             action.act(model, view)
+
+class AttachDatabase(IAction):
+    def __init__(self, db: Database, alias: str):
+        self._db = db
+        self._alias = alias
+
+    def act(self, model: 'Model', view: 'View'):
+        try:
+            model.databases.attach(self._db)
+        except KeyError as e:
+            ErrorAction(e).act(model, view)
+            return
+
+        model.configuration.update({'databases': [*model.configuration.settings['databases'],
+                                                  {'path': self._db.path,
+                                                   'alias': self._alias}]})
+
+
+class CreateDatabaseAction(IAction):
+    def __init__(self, database: list[str], path: list[str], alias: list[str]):
+        self._db_name = database
+        self._path = path
+        self._alias = alias
+
+    def act(self, model: 'Model', view: 'View'):
+        if self._db_name in model.databases.get_db_names():
+            ErrorAction(f'There already is `{self._db_name}` database')
+            return
+
+        db = Database(self._path[0], model.serializer, self._db_name[0], {})
+
+        AttachDatabase(db, self._alias[0]).act(model, view)

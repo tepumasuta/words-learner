@@ -8,9 +8,9 @@ from app import Configuration, Application
 def main():
     args = sys.argv[1:]
     
-    # TODO: implement pretty error print
+    # TODO: implement get_help
     if not args:
-        print(...)
+        print('Should print help')
         return
 
     config: Configuration

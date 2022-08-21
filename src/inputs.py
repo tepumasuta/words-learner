@@ -45,6 +45,7 @@ class TerminalInput(IInput):
         if 'list' in ns: return ListDatabasesAction(ns.dbs)
         if 'create' in ns: return CreateDatabaseAction(ns.db, ns.db_path, ns.db_alias or ns.db)
         if 'print' in ns: return PrintDatabaseAction(ns.db)
+        if 'attach' in ns: return AttachDatabase(ns.db_alias, ns.db_path)
 
         # TODO: implement database action
 

@@ -43,5 +43,11 @@ _parser_print.add_argument_group('Print databases')
 _parser_print.add_argument('print', metavar='print', choices=['print'])
 _parser_print.add_argument('db', nargs=1, type=str, metavar='<database-name>')
 
+_parser_attach = argparse.ArgumentParser(prog='Words Learner Attach', exit_on_error=False)
+_parser_attach.add_argument_group('Attach databases')
+_parser_attach.add_argument('attach', metavar='attach', choices=['attach'])
+_parser_attach.add_argument('db_alias', nargs=1, type=str, metavar='<alias>')
+_parser_attach.add_argument('db_path', nargs=1, type=str, metavar='<database-path>')
+
 PARSERS = [_parser_test, _parser_get, _parser_add, _parser_rm, _parser_list, _parser_create,
-           _parser_print]
+           _parser_print, _parser_attach]

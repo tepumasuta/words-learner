@@ -161,33 +161,39 @@ class ChainAction(IAction):
             action.act(model, view)
 
 class AttachDatabase(IAction):
-    def __init__(self, db: Database, alias: str):
-        self._db = db
-        self._alias = alias
+    def __init__(self, alias: str, db_path: str):
+        self._db_path = db_path[0]
+        self._alias = alias[0]
 
     def act(self, model: 'Model', view: 'View'):
         try:
-            model.databases.attach(self._db)
+            db = Database.load(self._db_path, model.serializer)
+        except FileNotFoundError as e:
+            ErrorAction(e).act(model, view)
+            return
+
+        try:
+            model.databases.attach(db)
         except KeyError as e:
             ErrorAction(e).act(model, view)
             return
 
         model.configuration.update({'databases': [*model.configuration.settings['databases'],
-                                                  {'path': self._db.path,
+                                                  {'path': self._db_path,
                                                    'alias': self._alias}]})
 
 
 class CreateDatabaseAction(IAction):
     def __init__(self, database: list[str], path: list[str], alias: list[str]):
-        self._db_name = database
-        self._path = path
-        self._alias = alias
+        self._db_name = database[0]
+        self._path = path[0]
+        self._alias = alias[0]
 
     def act(self, model: 'Model', view: 'View'):
         if self._db_name in model.databases.get_db_names():
             ErrorAction(f'There already is `{self._db_name}` database')
             return
 
-        db = Database(self._path[0], model.serializer, self._db_name[0], {})
-
-        AttachDatabase(db, self._alias[0]).act(model, view)
+        db = Database(self._path, model.serializer, self._db_name, {})
+        db.dump()
+        AttachDatabase([self._alias], [self._path]).act(model, view)

@@ -143,18 +143,38 @@ class PrintDatabaseAction(IAction):
 
 
 class RemoveAction(IAction):
-    def __init__(self, db_name: str, key: str, value: str | None = None):
-        self._db_name = db_name
-        self._key = key
-        self._value = value
+    def __init__(self, database: list[str], key: list[str], values: list[str] | None = None):
+        self._db_name = database[0]
+        self._key = key[0]
+        self._value = values
 
     def act(self, model: 'Model', view: 'View'):
         if self._db_name not in model.databases.get_db_names():
             ErrorAction(f'No such database `{self._db_name}`').act(model, view)
             return
-        model.databases.get_database(self._db_name).remove(self._key, self._value)
+        
+        db = model.databases.get_database(self._db_name)
+        if self._value is None:
+            try:
+                db.remove(self._key)
+            except KeyError as e:
+                ErrorAction(e).act(model, view)
+            return
 
-        print(model.configuration.settings)            
+        for value in self._value:
+            try:
+                db.remove(self._key, value)
+            except KeyError as e:
+                ErrorAction(e).act(model, view)
+
+
+class RemoveDatabaseAction(IAction):
+    def __init__(self, ):
+        ...
+    
+    def act(self, model: 'Model', view: 'View'):
+        ...
+                    
 
 class ChainAction(IAction):
     def __init__(self, *actions: IAction):

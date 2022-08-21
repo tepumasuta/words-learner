@@ -98,6 +98,15 @@ class ErrorAction(IAction):
     def act(self, model: 'Model', view: 'View'):
         view.display.error(self._err_msg)
 
+
+class PrintAction(IAction):
+    def __init__(self, message: str):
+        self._message = message
+
+    def act(self, model: 'Model', view: 'View'):
+        view.display.print(self._message)
+
+
 class AddAction(IAction):
     def __init__(self, database: str, key: str, value: list):
         self._db_name = database

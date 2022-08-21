@@ -47,8 +47,6 @@ class TerminalInput(IInput):
         if 'print' in ns: return PrintDatabaseAction(ns.db)
         if 'attach' in ns: return AttachDatabase(ns.db_alias, ns.db_path)
 
-        # TODO: implement database action
-
     def question(self, display: "TerminalDisplay", string: str | None = None):
         if string is not None:
             display.print(string)

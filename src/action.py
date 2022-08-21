@@ -9,7 +9,7 @@ class IAction(ABC):
 
 
 class TestAction(IAction):
-    def __init__(self, database: str):
+    def __init__(self, database: list[str]):
         self._db_name = database[0]
     
     def act(self, model: 'Model', view: 'View'):
@@ -56,7 +56,7 @@ class ResultTestAction(IAction):
 
 
 class GetAction(IAction):
-    def __init__(self, database: str, key: str):
+    def __init__(self, database: list[str], key: list[str]):
         self._db_name = database[0]
         self._key = key[0]
     
@@ -109,10 +109,10 @@ class PrintAction(IAction):
 
 
 class AddAction(IAction):
-    def __init__(self, database: str, key: str, value: list):
+    def __init__(self, database: list[str], key: list[str], values: list[str]):
         self._db_name = database[0]
         self._key = key[0]
-        self._value = value
+        self._values = values
     
     def act(self, model: 'Model', view: 'View'):
         if self._db_name not in model.databases.get_db_names():
@@ -120,15 +120,14 @@ class AddAction(IAction):
             return
 
         db = model.databases.get_database(self._db_name)
-        for value in self._value:    
+        for value in self._values:
             try:
                 db.add(self._key, value)
             except ValueError as e:
                 ErrorAction(e).act(model, view)
-        return
 
 class PrintDatabaseAction(IAction):
-    def __init__(self, db_name: str):
+    def __init__(self, db_name: list[str]):
         self._db_name = db_name[0]
 
     def act(self, model: 'Model', view: 'View'):
@@ -152,6 +151,7 @@ class RemoveKeyAction(IAction):
         else:
             ...
 
+
 class ChainAction(IAction):
     def __init__(self, *actions: IAction):
         self._actions = actions
@@ -159,6 +159,7 @@ class ChainAction(IAction):
     def act(self, model: 'Model', view: 'View'):
         for action in self._actions:
             action.act(model, view)
+
 
 class AttachAction(IAction):
     def __init__(self, alias: str, db_path: str):

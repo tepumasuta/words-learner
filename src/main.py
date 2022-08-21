@@ -3,14 +3,13 @@ import sys
 import os
 
 from app import Configuration, Application
-
+from parser import get_help
 
 def main():
     args = sys.argv[1:]
     
-    # TODO: implement get_help
     if not args:
-        print('Should print help')
+        print(get_help())
         return
 
     config: Configuration

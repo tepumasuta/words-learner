@@ -44,7 +44,7 @@ class Database:
     @staticmethod
     def load(path: pathlib.Path, serializer: ISerializer) -> 'Database':
         if not os.path.exists(path):
-            raise FileNotFoundError()
+            raise FileNotFoundError(f"Couldn't find file with path `{path}`")
 
         name, data = serializer.deserialize_list(path)
         name = StringSerializabe.deserialize(name).value

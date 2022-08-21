@@ -129,7 +129,7 @@ class AddAction(IAction):
 
 class PrintDatabaseAction(IAction):
     def __init__(self, db_name: str):
-        self._db_name = db_name
+        self._db_name = db_name[0]
 
     def act(self, model: 'Model', view: 'View'):
         try:
@@ -137,8 +137,8 @@ class PrintDatabaseAction(IAction):
         except KeyError as e:
             ErrorAction(e).act(model, view)
 
-        for key, value in db:
-            print(f"{key} - {', '.join(value)}")
+        for key, values in db:
+            print(f"{key} - {', '.join(values)}")
 
 
 class RemoveKeyAction(IAction):

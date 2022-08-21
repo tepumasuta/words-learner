@@ -160,7 +160,7 @@ class ChainAction(IAction):
         for action in self._actions:
             action.act(model, view)
 
-class AttachDatabase(IAction):
+class AttachAction(IAction):
     def __init__(self, alias: str, db_path: str):
         self._db_path = db_path[0]
         self._alias = alias[0]
@@ -183,6 +183,20 @@ class AttachDatabase(IAction):
                                                    'alias': self._alias}]})
 
 
+class DetachAction(IAction):
+    def __init__(self, db_name: str):
+        self._db_name = db_name[0]
+        
+    def act(self, model: 'Model', view: 'View'):
+        if self._db_name not in model.databases.get_db_names():
+            ErrorAction(f'No such database `{self._db_name}`').act(model, view)
+            return
+
+        model.databases.detach(self._db_name)
+        model.configuration.update({'databases': [db
+                                                  for db in model.configuration.settings['databases']
+                                                  if db['alias'] != self._db_name]})
+
 class CreateDatabaseAction(IAction):
     def __init__(self, database: list[str], path: list[str], alias: list[str]):
         self._db_name = database[0]
@@ -196,4 +210,4 @@ class CreateDatabaseAction(IAction):
 
         db = Database(self._path, model.serializer, self._db_name, {})
         db.dump()
-        AttachDatabase([self._alias], [self._path]).act(model, view)
+        AttachAction([self._alias], [self._path]).act(model, view)

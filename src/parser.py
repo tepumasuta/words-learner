@@ -49,5 +49,10 @@ _parser_attach.add_argument('attach', metavar='attach', choices=['attach'])
 _parser_attach.add_argument('db_alias', nargs=1, type=str, metavar='<alias>')
 _parser_attach.add_argument('db_path', nargs=1, type=str, metavar='<database-path>')
 
+_parser_detach = argparse.ArgumentParser(prog='Words Learner Detach', exit_on_error=False)
+_parser_detach.add_argument_group('Detach databases')
+_parser_detach.add_argument('detach', metavar='detach', choices=['detach'])
+_parser_detach.add_argument('db', nargs=1, type=str, metavar='<database-name>')
+
 PARSERS = [_parser_test, _parser_get, _parser_add, _parser_rm, _parser_list, _parser_create,
-           _parser_print, _parser_attach]
+           _parser_print, _parser_attach, _parser_detach]

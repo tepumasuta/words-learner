@@ -1,3 +1,4 @@
+#!/usr/bin/python3.10
 import sys
 import os
 
@@ -7,9 +8,9 @@ from app import Configuration, Application
 def main():
     args = sys.argv[1:]
     
-    # TODO: implement get_help
+    # TODO: implement pretty error print
     if not args:
-        print('Should print help')
+        print(...)
         return
 
     config: Configuration

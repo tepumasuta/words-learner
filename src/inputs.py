@@ -47,6 +47,7 @@ class TerminalInput(IInput):
         if 'print' in ns: return PrintDatabaseAction(ns.db)
         if 'attach' in ns: return AttachAction(ns.db_alias, ns.db_path)
         if 'detach' in ns: return DetachAction(ns.db)
+        if 'delete' in ns: return DeleteAction(ns.db)
 
     def question(self, display: "TerminalDisplay", string: str | None = None):
         if string is not None:

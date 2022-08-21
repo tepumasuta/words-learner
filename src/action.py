@@ -148,32 +148,33 @@ class RemoveAction(IAction):
         self._value = values
 
     def act(self, model: 'Model', view: 'View'):
-        if self._db_name not in model.databases.get_db_names():
-            ErrorAction(f'No such database `{self._db_name}`').act(model, view)
-            return
-        
-        db = model.databases.get_database(self._db_name)
         if self._value is None:
             try:
-                db.remove(self._key)
+                model.databases.remove(self._db_name, self._key, None)
             except KeyError as e:
                 ErrorAction(e).act(model, view)
             return
 
         for value in self._value:
             try:
-                db.remove(self._key, value)
+                model.databases.remove(self._db_name, self._key, value)
             except KeyError as e:
                 ErrorAction(e).act(model, view)
 
 
-class RemoveDatabaseAction(IAction):
-    def __init__(self, ):
-        ...
+class DeleteAction(IAction):
+    def __init__(self, db_name: list[str]):
+        self._db_name = db_name[0]
     
     def act(self, model: 'Model', view: 'View'):
-        ...
-                    
+        if self._db_name not in model.databases.get_db_names():
+            ErrorAction(f'No such database `{self._db_name}`').act(model, view)
+            return
+        
+        model.databases.delete(self._db_name)
+        model.configuration.update({'databases': [db
+                                                  for db in model.configuration.settings['databases']
+                                                  if db['alias'] != self._db_name]})
 
 
 class ChainAction(IAction):

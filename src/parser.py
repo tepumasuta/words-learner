@@ -44,7 +44,7 @@ _parser_print.add_argument('print', metavar='print', choices=['print'])
 _parser_print.add_argument('db', nargs=1, type=str, metavar='<database-name>')
 
 _parser_attach = argparse.ArgumentParser(prog='Attach: words-learner', exit_on_error=False)
-_parser_attach.add_argument_group('Attach databases')
+_parser_attach.add_argument_group('Attach database')
 _parser_attach.add_argument('attach', metavar='attach', choices=['attach'])
 _parser_attach.add_argument('db_alias', nargs=1, type=str, metavar='<alias>')
 _parser_attach.add_argument('db_path', nargs=1, type=str, metavar='<database-path>')
@@ -54,8 +54,13 @@ _parser_detach.add_argument_group('Detach databases')
 _parser_detach.add_argument('detach', metavar='detach', choices=['detach'])
 _parser_detach.add_argument('db', nargs=1, type=str, metavar='<database-name>')
 
+_parser_delete = argparse.ArgumentParser(prog='Delete: words-learner', exit_on_error=False)
+_parser_delete.add_argument_group('Delete database')
+_parser_delete.add_argument('delete', metavar='delete', choices=['delete'])
+_parser_delete.add_argument('db', nargs=1, type=str, metavar='<database-name>')
+
 PARSERS = [_parser_test, _parser_get, _parser_add, _parser_rm, _parser_list, _parser_create,
-           _parser_print, _parser_attach, _parser_detach]
+           _parser_print, _parser_attach, _parser_detach, _parser_delete]
 
 def get_help() -> str:
     text = ''

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from ast import Mod
 from database import Database, Record
+
 
 class IAction(ABC):
     @abstractmethod
@@ -117,13 +117,6 @@ class AddAction(IAction):
                 ErrorAction(e).act(model, view)
         return
 
-class PrintAction(IAction):
-    def __init__(self, message: str):
-        self._message = message
-
-    def act(self, model: 'Model', view: 'View'):
-        view.display.print(self._message)
-
 class PrintDatabaseAction(IAction):
     def __init__(self, db_name: str):
         self._db_name = db_name
@@ -148,4 +141,3 @@ class RemoveKeyAction(IAction):
             Database.remove(self._key)
         else:
             ...
-            

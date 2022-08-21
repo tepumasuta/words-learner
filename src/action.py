@@ -150,3 +150,11 @@ class RemoveKeyAction(IAction):
             Database.remove(self._key)
         else:
             ...
+
+class ChainAction(IAction):
+    def __init__(self, *actions: IAction):
+        self._actions = actions
+    
+    def act(self, model: 'Model', view: 'View'):
+        for action in self._actions:
+            action.act(model, view)

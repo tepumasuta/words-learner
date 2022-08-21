@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import argparse
 from action import *
-from parser import PARSERS
+from parser import PARSERS, get_help
 
 class IInput(ABC):
     @abstractmethod
@@ -24,7 +24,7 @@ class TerminalInput(IInput):
         # TODO: implement get_help()
         if not args:
             return ChainAction(ErrorAction('No arguments provided'),
-                               PrintAction('Should print help'))
+                               PrintAction(get_help()))
 
         for parser in PARSERS:
             try:
@@ -35,7 +35,7 @@ class TerminalInput(IInput):
         else:
             # TODO: implement get_help()
             return ChainAction(ErrorAction(f'Unknown action: {args[0]}'),
-                               PrintAction('Should print help'))
+                               PrintAction(get_help()))
 
         if 'test' in ns: return TestAction(ns.db)
         if 'get' in ns: return GetAction(ns.db, ns.key)

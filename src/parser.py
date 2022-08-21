@@ -3,8 +3,8 @@ import argparse
 
 _parser_test = argparse.ArgumentParser(prog='Test: words-learner', exit_on_error=False)
 _parser_test.add_argument_group('Test')
-_parser_test.add_argument('test', metavar='test', choices=['test'])
-_parser_test.add_argument('db', nargs=1, type=str, metavar='<database-name>')
+_parser_test.add_argument('test', metavar='test', choices=['test'], help='Test words from database <database-name>')
+_parser_test.add_argument('db', nargs=1, type=str, metavar='<database-name>', help='Name of database to be tested')
 
 _parser_get = argparse.ArgumentParser(prog='Get: words-learner', exit_on_error=False)
 _parser_get.add_argument_group('Get record from database')
@@ -49,7 +49,7 @@ _parser_attach.add_argument('attach', metavar='attach', choices=['attach'])
 _parser_attach.add_argument('db_alias', nargs=1, type=str, metavar='<alias>')
 _parser_attach.add_argument('db_path', nargs=1, type=str, metavar='<database-path>')
 
-_parser_detach = argparse.ArgumentParser(prog='Detach: words-learner <>', exit_on_error=False)
+_parser_detach = argparse.ArgumentParser(prog='Detach: words-learner', exit_on_error=False)
 _parser_detach.add_argument_group('Detach databases')
 _parser_detach.add_argument('detach', metavar='detach', choices=['detach'])
 _parser_detach.add_argument('db', nargs=1, type=str, metavar='<database-name>')
@@ -65,7 +65,8 @@ def get_help() -> str:
     for parser in PARSERS:
         usages.append(parser.format_usage())
         format_help = parser.format_help()
-        helps.append(format_help[format_help.find('options'):][len('options: \n'):-1].rstrip())
+        # print(format_help)
+        helps.append(format_help[format_help.find('positional arguments'):format_help.find('options')][len('positional arguments: \n'):-1].rstrip())
 
     usage = 'usage:\n' + '\n'.join((f"-{u[len('usage:'):-1]}\n {h}\n" for u, h in zip(usages, helps)))
     return usage

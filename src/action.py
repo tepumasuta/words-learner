@@ -34,7 +34,7 @@ class PerformTestAction(IAction):
     def act(self, model: 'Model', view: 'View'):
         for key in self._keys:
             expected_values = set(self._data[key].contents)
-            answer = view.input.question(view.display, f'{key}\n')
+            answer = view.input.question(view.display, f'{key}')
             self.result.append((key, answer, answer in expected_values, expected_values))
 
 

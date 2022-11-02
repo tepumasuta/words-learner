@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from configparser import ConfigParser
 from database import Database, Record
 
 

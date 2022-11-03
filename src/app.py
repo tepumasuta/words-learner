@@ -13,7 +13,7 @@ from common import _type_check
 
 class Configuration:
     POSSIBLE_SETTINGS = 'databases', 'test', 'db-format'
-    DEFAULT_PATH = os.path.expanduser('~/.wordslearner/config.yaml')
+    PATH = os.path.expanduser('~/.wordslearner/config.yaml')
     
     def __init__(self, settings: dict | None = None):
         self.settings = settings or {'databases': [], 'test': 'default', 'db-format': 'pickle'}
@@ -75,7 +75,7 @@ class Configuration:
                 if setting != 'alias'
             }
 
-        with open(Configuration.DEFAULT_PATH, 'w') as config:
+        with open(Configuration.PATH, 'w') as config:
             yaml.dump(dump_settings, config)
 
 

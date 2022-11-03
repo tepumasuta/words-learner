@@ -1,6 +1,5 @@
 #!/usr/bin/python3.11
 import sys
-import os
 
 from app import Configuration, Application
 from parser import get_help
@@ -11,18 +10,14 @@ def main():
     if not args:
         print(get_help())
         return
-
-    config: Configuration
-    if args[0] == '-':
-        if os.path.exists(Configuration.DEFAULT_PATH):
-            config = Configuration.from_path(Configuration.DEFAULT_PATH)
-        else:
-            config = Configuration()
-    else:
-        # TODO: implement pretty error print
-        config = Configuration.from_path(args[0])
     
-    args = args[1:]
+    config: Configuration
+    try:
+        config = Configuration.from_path(Configuration.PATH)
+    except OSError as e:
+        # TODO: print error message via application
+        # -> implement event queue for stacking events up before Application 
+        config = Configuration()
 
     app = Application.from_config(config, args)
     app.run()
